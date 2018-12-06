@@ -4,6 +4,9 @@ import { HashRouter , Route , Switch , Link } from 'react-router-dom'
 
 // pages
 import Home from './pages/home/home'
+import { apikey } from './utils/api'
+
+console.log('api key' , apikey)
 
 const initUserState = {
   username: 'tesi'

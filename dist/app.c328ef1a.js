@@ -28691,7 +28691,18 @@ function Home() {
     className: "container mx-auto mt-10"
   }, _react.default.createElement("h1", null, "home..."));
 }
-},{"react":"../node_modules/react/index.js","../../app.js":"app.js"}],"app.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../app.js":"app.js"}],"utils/api.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.apiUrl = exports.apikey = void 0;
+var apikey = 'e2543544966bf88a795a2ebb6a4a9c46';
+exports.apikey = apikey;
+var apiUrl = 'https://api.themoviedb.org/3/';
+exports.apiUrl = apiUrl;
+},{}],"app.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28707,6 +28718,8 @@ var _reactRouterDom = require("react-router-dom");
 
 var _home = _interopRequireDefault(require("./pages/home/home"));
 
+var _api = require("./utils/api");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
@@ -28717,6 +28730,7 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+console.log('api key', _api.apikey);
 var initUserState = {
   username: 'tesi'
 };
@@ -28755,5 +28769,5 @@ function Roots() {
 var app = document.querySelector('#app');
 
 _reactDom.default.render(_react.default.createElement(Roots, null), app);
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js"}]},{},["app.js"], null)
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js","./utils/api":"utils/api.js"}]},{},["app.js"], null)
 //# sourceMappingURL=/app.c328ef1a.map
