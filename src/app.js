@@ -4,10 +4,13 @@ import { HashRouter , Route , Switch , Link } from 'react-router-dom'
 
 // pages
 import Home from './pages/home/home'
+import MovieDetails from './pages/details/movieDetails'
+import Popup from './component/popup'
+
+// utils
 import { apikey , apiUrl } from './utils/api'
 
-console.log('api key' , apikey)
-
+// data user
 const initUserState = {
   username: 'tesi'
 }
@@ -20,6 +23,7 @@ function userReducer(state , action) {
   }
 }
 
+// movies state
 const initMovieState = {
   movies: []
 }
@@ -44,22 +48,52 @@ export const MovieContext = React.createContext('MovieContext')
 function Roots() {
   const [userState , userDispatch] = React.useReducer(userReducer , initUserState)
   const [movieState , movieDispatch] = React.useReducer(movieReducer , initMovieState)
+  const [movies , setMovies] = React.useState([])
+  const [moviesTrending , setMoviesTrending] = React.useState([])
+
+  function fetchUrl(query , region) {
+    return `${apiUrl}${query}?api_key=${apikey}&region=ID`
+  }
 
   React.useEffect(() => {
-    console.log(movieState)
-    console.log('api' , apiUrl , apikey , `${apiUrl}movie/now_playing?api_key=${apikey}&region=ID`)
-    fetch(`${apiUrl}movie/now_playing?api_key=${apikey}&region=ID`)
-      .then(res => res.json())
-      .then(data => movieDispatch({ type: 'init movies' , payload: data }))
-      .catch(err => console.log(err))
+    // fetch now playing
+    fetchMovies('movie/now_playing' , (err , data) => {
+      if (err) throw err
+      movieDispatch({ type: 'init movies' , payload: data })
+      setMovies(data)
+    })
+
+    // fetch top rated data
+    fetchMovies('movie/popular' , (err , data) => {
+      if (err) throw err
+      console.log('top rated'  , data)
+      setMoviesTrending(data)
+    })
   } , [])
+
+  const fetchMovies = (url , callback) => {
+    let err = false
+    fetch(fetchUrl(url))
+      .then(res => res.json())
+      .then(data => {
+        err = false
+        callback(err , data)
+      })
+      .catch(err => {
+        err = true 
+        callback(err , data)
+      })
+  }
+
 
   return (
     <AppContext.Provider value={{userState , userDispatch}}>
-      <MovieContext.Provider value={{movieState , movieDispatch}}>
+      <MovieContext.Provider value={{movieState , movieDispatch , movies , moviesTrending}}>
+        <Popup show={false} />
         <HashRouter>
           <Switch>
             <Route exact path='/' component={Home} />
+            <Route exact path='/details' component={MovieDetails} />
           </Switch>
         </HashRouter>
       </MovieContext.Provider>

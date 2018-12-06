@@ -28672,12 +28672,49 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.apiUrl = exports.apikey = void 0;
+exports.imgUrl = exports.apiUrl = exports.apikey = void 0;
 var apikey = 'e2543544966bf88a795a2ebb6a4a9c46';
 exports.apikey = apikey;
 var apiUrl = 'https://api.themoviedb.org/3/';
 exports.apiUrl = apiUrl;
-},{}],"pages/home/home.js":[function(require,module,exports) {
+var imgUrl = 'https://image.tmdb.org/t/p/';
+exports.imgUrl = imgUrl;
+},{}],"pages/home/movie.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Movie;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactRouterDom = require("react-router-dom");
+
+var _api = require("../../utils/api");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Movie(_ref) {
+  var details = _ref.details;
+  return _react.default.createElement(_reactRouterDom.Link, {
+    to: "/details",
+    className: "no-underline text-black"
+  }, _react.default.createElement("div", {
+    className: "movie-details-container w-48 m-5 flex flex-wrap flex-col bg-white"
+  }, _react.default.createElement("div", {
+    className: "top w-full h-64 d relative cursor-pointer overflow-hidden rounded"
+  }, _react.default.createElement("img", {
+    className: "absolute w-full h-full pin-t pin-l",
+    src: "".concat(_api.imgUrl, "original").concat(details.poster_path),
+    alt: ""
+  })), _react.default.createElement("div", {
+    className: "bottom mt-3"
+  }, _react.default.createElement("h5", null, details.title), _react.default.createElement("h5", {
+    className: "mt-1 text-green-dark font-bold p-1"
+  }, details.vote_average))));
+}
+},{"react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","../../utils/api":"utils/api.js"}],"pages/home/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28691,34 +28728,83 @@ var _app = require("../../app.js");
 
 var _api = require("../../utils/api");
 
+var _movie = _interopRequireDefault(require("./movie"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function Home() {
   var _React$useContext = _react.default.useContext(_app.MovieContext),
-      movieState = _React$useContext.movieState;
+      movieState = _React$useContext.movieState,
+      movies = _React$useContext.movies,
+      moviesTrending = _React$useContext.moviesTrending;
 
-  var _React$useState = _react.default.useState(),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      movieData = _React$useState2[0],
-      setMovieData = _React$useState2[1];
-
-  _react.default.useEffect(function () {
-    console.log('Movie context', movieState);
-  });
+  var renderMovie = function renderMovie(movies) {
+    return movies.length !== 0 ? movies.results.map(function (movie, i) {
+      return _react.default.createElement(_movie.default, {
+        key: i,
+        details: movie
+      });
+    }) : _react.default.createElement("h1", null, "Loading...");
+  };
 
   return _react.default.createElement("div", {
-    className: "container mx-auto mt-10"
-  }, _react.default.createElement("h1", null, "home..."));
+    className: "w-full mt-12"
+  }, _react.default.createElement("div", {
+    className: "container mx-auto mb-10"
+  }, _react.default.createElement("h1", {
+    className: "text-center text-5xl"
+  }, "Tokoflix")), _react.default.createElement("div", null, _react.default.createElement("div", {
+    className: "container mx-auto"
+  }, _react.default.createElement("h1", {
+    className: "ml-5 text-green"
+  }, "indonesia")), _react.default.createElement("div", {
+    className: "movie-container container mx-auto flex flex-wrap items-center"
+  }, renderMovie(movies))), _react.default.createElement("div", {
+    className: "mt-10"
+  }, _react.default.createElement("div", {
+    className: "container mx-auto"
+  }, _react.default.createElement("h1", {
+    className: "ml-5 text-green"
+  }, "Trending")), _react.default.createElement("div", {
+    className: "movie-container container mx-auto flex flex-wrap items-center"
+  }, renderMovie(moviesTrending))));
 }
-},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js"}],"app.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js","./movie":"pages/home/movie.js"}],"pages/details/movieDetails.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = MovieDetails;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function MovieDetails() {
+  return _react.default.createElement("div", null, _react.default.createElement("h1", null, "details"));
+}
+},{"react":"../node_modules/react/index.js"}],"component/popup.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Popup;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Popup(_ref) {
+  var show = _ref.show;
+  return show && _react.default.createElement("div", {
+    className: "popup bg-black fixed pin-y pin-x flex items-center justify-center z-50"
+  }, _react.default.createElement("div", {
+    className: "popup-inner bg-white p-2"
+  }, _react.default.createElement("h1", null, "username")));
+}
+},{"react":"../node_modules/react/index.js"}],"app.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28733,6 +28819,10 @@ var _reactDom = _interopRequireDefault(require("react-dom"));
 var _reactRouterDom = require("react-router-dom");
 
 var _home = _interopRequireDefault(require("./pages/home/home"));
+
+var _movieDetails = _interopRequireDefault(require("./pages/details/movieDetails"));
+
+var _popup = _interopRequireDefault(require("./component/popup"));
 
 var _api = require("./utils/api");
 
@@ -28750,7 +28840,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-console.log('api key', _api.apikey);
+// data user
 var initUserState = {
   username: 'tesi'
 };
@@ -28762,7 +28852,8 @@ function userReducer(state, action) {
         return state;
       }
   }
-}
+} // movies state
+
 
 var initMovieState = {
   movies: []
@@ -28803,20 +28894,50 @@ function Roots() {
       movieState = _React$useReducer4[0],
       movieDispatch = _React$useReducer4[1];
 
+  var _React$useState = _react.default.useState([]),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      movies = _React$useState2[0],
+      setMovies = _React$useState2[1];
+
+  var _React$useState3 = _react.default.useState([]),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      moviesTrending = _React$useState4[0],
+      setMoviesTrending = _React$useState4[1];
+
+  function fetchUrl(query, region) {
+    return "".concat(_api.apiUrl).concat(query, "?api_key=").concat(_api.apikey, "&region=ID");
+  }
+
   _react.default.useEffect(function () {
-    console.log(movieState);
-    console.log('api', _api.apiUrl, _api.apikey, "".concat(_api.apiUrl, "movie/now_playing?api_key=").concat(_api.apikey, "&region=ID"));
-    fetch("".concat(_api.apiUrl, "movie/now_playing?api_key=").concat(_api.apikey, "&region=ID")).then(function (res) {
-      return res.json();
-    }).then(function (data) {
-      return movieDispatch({
+    // fetch now playing
+    fetchMovies('movie/now_playing', function (err, data) {
+      if (err) throw err;
+      movieDispatch({
         type: 'init movies',
         payload: data
       });
-    }).catch(function (err) {
-      return console.log(err);
+      setMovies(data);
+    }); // fetch top rated data
+
+    fetchMovies('movie/popular', function (err, data) {
+      if (err) throw err;
+      console.log('top rated', data);
+      setMoviesTrending(data);
     });
   }, []);
+
+  var fetchMovies = function fetchMovies(url, callback) {
+    var err = false;
+    fetch(fetchUrl(url)).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      err = false;
+      callback(err, data);
+    }).catch(function (err) {
+      err = true;
+      callback(err, data);
+    });
+  };
 
   return _react.default.createElement(AppContext.Provider, {
     value: {
@@ -28826,17 +28947,25 @@ function Roots() {
   }, _react.default.createElement(MovieContext.Provider, {
     value: {
       movieState: movieState,
-      movieDispatch: movieDispatch
+      movieDispatch: movieDispatch,
+      movies: movies,
+      moviesTrending: moviesTrending
     }
-  }, _react.default.createElement(_reactRouterDom.HashRouter, null, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
+  }, _react.default.createElement(_popup.default, {
+    show: false
+  }), _react.default.createElement(_reactRouterDom.HashRouter, null, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
     exact: true,
     path: "/",
     component: _home.default
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    exact: true,
+    path: "/details",
+    component: _movieDetails.default
   })))));
 }
 
 var app = document.querySelector('#app');
 
 _reactDom.default.render(_react.default.createElement(Roots, null), app);
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js","./utils/api":"utils/api.js"}]},{},["app.js"], null)
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js","./pages/details/movieDetails":"pages/details/movieDetails.js","./component/popup":"component/popup.js","./utils/api":"utils/api.js"}]},{},["app.js"], null)
 //# sourceMappingURL=/app.c328ef1a.map
