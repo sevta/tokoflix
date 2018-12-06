@@ -28666,7 +28666,18 @@ var _matchPath2 = _interopRequireDefault(require("./matchPath"));
 var _withRouter2 = _interopRequireDefault(require("./withRouter"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./BrowserRouter":"../node_modules/react-router-dom/es/BrowserRouter.js","./HashRouter":"../node_modules/react-router-dom/es/HashRouter.js","./Link":"../node_modules/react-router-dom/es/Link.js","./MemoryRouter":"../node_modules/react-router-dom/es/MemoryRouter.js","./NavLink":"../node_modules/react-router-dom/es/NavLink.js","./Prompt":"../node_modules/react-router-dom/es/Prompt.js","./Redirect":"../node_modules/react-router-dom/es/Redirect.js","./Route":"../node_modules/react-router-dom/es/Route.js","./Router":"../node_modules/react-router-dom/es/Router.js","./StaticRouter":"../node_modules/react-router-dom/es/StaticRouter.js","./Switch":"../node_modules/react-router-dom/es/Switch.js","./generatePath":"../node_modules/react-router-dom/es/generatePath.js","./matchPath":"../node_modules/react-router-dom/es/matchPath.js","./withRouter":"../node_modules/react-router-dom/es/withRouter.js"}],"pages/home/home.js":[function(require,module,exports) {
+},{"./BrowserRouter":"../node_modules/react-router-dom/es/BrowserRouter.js","./HashRouter":"../node_modules/react-router-dom/es/HashRouter.js","./Link":"../node_modules/react-router-dom/es/Link.js","./MemoryRouter":"../node_modules/react-router-dom/es/MemoryRouter.js","./NavLink":"../node_modules/react-router-dom/es/NavLink.js","./Prompt":"../node_modules/react-router-dom/es/Prompt.js","./Redirect":"../node_modules/react-router-dom/es/Redirect.js","./Route":"../node_modules/react-router-dom/es/Route.js","./Router":"../node_modules/react-router-dom/es/Router.js","./StaticRouter":"../node_modules/react-router-dom/es/StaticRouter.js","./Switch":"../node_modules/react-router-dom/es/Switch.js","./generatePath":"../node_modules/react-router-dom/es/generatePath.js","./matchPath":"../node_modules/react-router-dom/es/matchPath.js","./withRouter":"../node_modules/react-router-dom/es/withRouter.js"}],"utils/api.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.apiUrl = exports.apikey = void 0;
+var apikey = 'e2543544966bf88a795a2ebb6a4a9c46';
+exports.apikey = apikey;
+var apiUrl = 'https://api.themoviedb.org/3/';
+exports.apiUrl = apiUrl;
+},{}],"pages/home/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28678,37 +28689,42 @@ var _react = _interopRequireDefault(require("react"));
 
 var _app = require("../../app.js");
 
+var _api = require("../../utils/api");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function Home() {
-  var context = _react.default.useContext(_app.AppContext);
+  var _React$useContext = _react.default.useContext(_app.MovieContext),
+      movieState = _React$useContext.movieState;
+
+  var _React$useState = _react.default.useState(),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      movieData = _React$useState2[0],
+      setMovieData = _React$useState2[1];
 
   _react.default.useEffect(function () {
-    console.log('context', context);
+    console.log('Movie context', movieState);
   });
 
   return _react.default.createElement("div", {
     className: "container mx-auto mt-10"
   }, _react.default.createElement("h1", null, "home..."));
 }
-},{"react":"../node_modules/react/index.js","../../app.js":"app.js"}],"utils/api.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js"}],"app.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.apiUrl = exports.apikey = void 0;
-var apikey = 'e2543544966bf88a795a2ebb6a4a9c46';
-exports.apikey = apikey;
-var apiUrl = 'https://api.themoviedb.org/3/';
-exports.apiUrl = apiUrl;
-},{}],"app.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.AppContext = void 0;
+exports.MovieContext = exports.AppContext = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -28730,13 +28746,37 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 console.log('api key', _api.apikey);
 var initUserState = {
   username: 'tesi'
 };
 
-function reducer(state, action) {
+function userReducer(state, action) {
   switch (action.type) {
+    default:
+      {
+        return state;
+      }
+  }
+}
+
+var initMovieState = {
+  movies: []
+};
+
+function movieReducer(state, action) {
+  switch (action.type) {
+    case 'init movies':
+      {
+        return _objectSpread({}, state, {
+          movies: action.payload
+        });
+      }
+
     default:
       {
         return state;
@@ -28748,22 +28788,51 @@ var AppContext = _react.default.createContext('AppContext');
 
 exports.AppContext = AppContext;
 
+var MovieContext = _react.default.createContext('MovieContext');
+
+exports.MovieContext = MovieContext;
+
 function Roots() {
-  var _React$useReducer = _react.default.useReducer(reducer, initUserState),
+  var _React$useReducer = _react.default.useReducer(userReducer, initUserState),
       _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
       userState = _React$useReducer2[0],
-      dispatch = _React$useReducer2[1];
+      userDispatch = _React$useReducer2[1];
+
+  var _React$useReducer3 = _react.default.useReducer(movieReducer, initMovieState),
+      _React$useReducer4 = _slicedToArray(_React$useReducer3, 2),
+      movieState = _React$useReducer4[0],
+      movieDispatch = _React$useReducer4[1];
+
+  _react.default.useEffect(function () {
+    console.log(movieState);
+    console.log('api', _api.apiUrl, _api.apikey, "".concat(_api.apiUrl, "movie/now_playing?api_key=").concat(_api.apikey, "&region=ID"));
+    fetch("".concat(_api.apiUrl, "movie/now_playing?api_key=").concat(_api.apikey, "&region=ID")).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      return movieDispatch({
+        type: 'init movies',
+        payload: data
+      });
+    }).catch(function (err) {
+      return console.log(err);
+    });
+  }, []);
 
   return _react.default.createElement(AppContext.Provider, {
     value: {
       userState: userState,
-      dispatch: dispatch
+      userDispatch: userDispatch
+    }
+  }, _react.default.createElement(MovieContext.Provider, {
+    value: {
+      movieState: movieState,
+      movieDispatch: movieDispatch
     }
   }, _react.default.createElement(_reactRouterDom.HashRouter, null, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
     exact: true,
     path: "/",
     component: _home.default
-  }))));
+  })))));
 }
 
 var app = document.querySelector('#app');

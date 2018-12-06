@@ -1,11 +1,13 @@
 import React from 'react'
-import { AppContext } from '../../app.js'
+import { AppContext , MovieContext } from '../../app.js'
+import { apikey , apiUrl } from '../../utils/api'
 
 export default function Home() {
-  const context = React.useContext(AppContext)
+  const {movieState} = React.useContext(MovieContext)
+  const [movieData , setMovieData] = React.useState()
 
   React.useEffect(() => {
-    console.log('context' , context)
+    console.log('Movie context' , movieState)
   })
 
   return (
