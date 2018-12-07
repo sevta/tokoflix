@@ -28672,13 +28672,31 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.imgUrl = exports.apiUrl = exports.apikey = void 0;
+exports.fetchUrl = exports.imgUrl = exports.apiUrl = exports.apikey = void 0;
 var apikey = 'e2543544966bf88a795a2ebb6a4a9c46';
 exports.apikey = apikey;
 var apiUrl = 'https://api.themoviedb.org/3/';
 exports.apiUrl = apiUrl;
 var imgUrl = 'https://image.tmdb.org/t/p/';
 exports.imgUrl = imgUrl;
+
+var fetchUrl = function fetchUrl(key, url, query) {
+  var fetchurl;
+
+  if (!key) {
+    console.warn('api key required');
+  } else {
+    if (query) {
+      fetchurl = "".concat(apiUrl).concat(url, "?api_key=").concat(key).concat(query);
+    } else {
+      fetchurl = "".concat(apiUrl).concat(url, "?api_key=").concat(key);
+    }
+  }
+
+  return fetchurl;
+};
+
+exports.fetchUrl = fetchUrl;
 },{}],"../node_modules/strict-uri-encode/index.js":[function(require,module,exports) {
 'use strict';
 
@@ -29016,8 +29034,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function Movie(_ref) {
   var details = _ref.details;
-
-  _react.default.useEffect(function () {}, []);
 
   function setPrice(vote) {
     switch (vote) {
@@ -31108,7 +31124,8 @@ function Home(props) {
       movies = _React$useContext.movies,
       moviesTrending = _React$useContext.moviesTrending,
       currentPage = _React$useContext.currentPage,
-      setCurrentPage = _React$useContext.setCurrentPage; // render per movie
+      setCurrentPage = _React$useContext.setCurrentPage,
+      setCurrentUrl = _React$useContext.setCurrentUrl; // render per movie
 
 
   var renderMovie = function renderMovie(movies) {
@@ -31118,7 +31135,11 @@ function Home(props) {
         details: movie
       });
     }) : _react.default.createElement("h1", null, "Loading...");
-  }; // handlechange per page
+  };
+
+  _react.default.useEffect(function () {
+    setCurrentUrl('/');
+  }, []); // handlechange per page
 
 
   function handlePageChange(pageNumber) {
@@ -31128,7 +31149,12 @@ function Home(props) {
 
   _react.default.useEffect(function () {
     console.log('page change', currentPage);
-    props.history.push("/?page=".concat(currentPage));
+
+    if (currentPage == 1) {
+      props.history.push("/");
+    } else {
+      props.history.push("/?page=".concat(currentPage));
+    }
   }, [currentPage]);
 
   return _react.default.createElement("div", {
@@ -31137,13 +31163,7 @@ function Home(props) {
     className: "container mx-auto mb-10"
   }, _react.default.createElement("h1", {
     className: "text-center text-5xl"
-  }, "Tokoflix")), _react.default.createElement(_reactJsPagination.default, {
-    activePage: currentPage,
-    itemsCountPerPage: 2,
-    totalItemsCount: 20,
-    pageRangDisplayed: 5,
-    onChange: handlePageChange
-  }), _react.default.createElement("div", null, _react.default.createElement("div", {
+  }, "Tokoflix")), _react.default.createElement("div", null, _react.default.createElement("div", {
     className: "container mx-auto"
   }, _react.default.createElement("h1", {
     className: "ml-5 text-green"
@@ -31157,12 +31177,955 @@ function Home(props) {
     className: "ml-5 text-green"
   }, "Trending")), _react.default.createElement("div", {
     className: "movie-container container mx-auto flex flex-wrap items-center"
-  }, renderMovie(moviesTrending))));
+  }, renderMovie(moviesTrending))), _react.default.createElement(_reactJsPagination.default, {
+    activePage: currentPage,
+    itemsCountPerPage: 2,
+    totalItemsCount: 20,
+    pageRangDisplayed: 5,
+    onChange: handlePageChange
+  }));
 }
 
 var _default = Home;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js","query-string":"../node_modules/query-string/index.js","./movie":"pages/home/movie.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","react-js-pagination":"../node_modules/react-js-pagination/dist/Pagination.js"}],"pages/details/movieDetails.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js","query-string":"../node_modules/query-string/index.js","./movie":"pages/home/movie.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","react-js-pagination":"../node_modules/react-js-pagination/dist/Pagination.js"}],"../node_modules/string-hash/index.js":[function(require,module,exports) {
+"use strict";
+
+function hash(str) {
+  var hash = 5381,
+      i    = str.length;
+
+  while(i) {
+    hash = (hash * 33) ^ str.charCodeAt(--i);
+  }
+
+  /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+   * integers. Since we want the results to be always positive, convert the
+   * signed int to an unsigned by doing an unsigned bitshift. */
+  return hash >>> 0;
+}
+
+module.exports = hash;
+
+},{}],"C:/Users/sevta/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js":[function(require,module,exports) {
+
+// shim for using process in browser
+var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+  throw new Error('setTimeout has not been defined');
+}
+
+function defaultClearTimeout() {
+  throw new Error('clearTimeout has not been defined');
+}
+
+(function () {
+  try {
+    if (typeof setTimeout === 'function') {
+      cachedSetTimeout = setTimeout;
+    } else {
+      cachedSetTimeout = defaultSetTimout;
+    }
+  } catch (e) {
+    cachedSetTimeout = defaultSetTimout;
+  }
+
+  try {
+    if (typeof clearTimeout === 'function') {
+      cachedClearTimeout = clearTimeout;
+    } else {
+      cachedClearTimeout = defaultClearTimeout;
+    }
+  } catch (e) {
+    cachedClearTimeout = defaultClearTimeout;
+  }
+})();
+
+function runTimeout(fun) {
+  if (cachedSetTimeout === setTimeout) {
+    //normal enviroments in sane situations
+    return setTimeout(fun, 0);
+  } // if setTimeout wasn't available but was latter defined
+
+
+  if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+    cachedSetTimeout = setTimeout;
+    return setTimeout(fun, 0);
+  }
+
+  try {
+    // when when somebody has screwed with setTimeout but no I.E. maddness
+    return cachedSetTimeout(fun, 0);
+  } catch (e) {
+    try {
+      // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+      return cachedSetTimeout.call(null, fun, 0);
+    } catch (e) {
+      // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+      return cachedSetTimeout.call(this, fun, 0);
+    }
+  }
+}
+
+function runClearTimeout(marker) {
+  if (cachedClearTimeout === clearTimeout) {
+    //normal enviroments in sane situations
+    return clearTimeout(marker);
+  } // if clearTimeout wasn't available but was latter defined
+
+
+  if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+    cachedClearTimeout = clearTimeout;
+    return clearTimeout(marker);
+  }
+
+  try {
+    // when when somebody has screwed with setTimeout but no I.E. maddness
+    return cachedClearTimeout(marker);
+  } catch (e) {
+    try {
+      // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+      return cachedClearTimeout.call(null, marker);
+    } catch (e) {
+      // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+      // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+      return cachedClearTimeout.call(this, marker);
+    }
+  }
+}
+
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+  if (!draining || !currentQueue) {
+    return;
+  }
+
+  draining = false;
+
+  if (currentQueue.length) {
+    queue = currentQueue.concat(queue);
+  } else {
+    queueIndex = -1;
+  }
+
+  if (queue.length) {
+    drainQueue();
+  }
+}
+
+function drainQueue() {
+  if (draining) {
+    return;
+  }
+
+  var timeout = runTimeout(cleanUpNextTick);
+  draining = true;
+  var len = queue.length;
+
+  while (len) {
+    currentQueue = queue;
+    queue = [];
+
+    while (++queueIndex < len) {
+      if (currentQueue) {
+        currentQueue[queueIndex].run();
+      }
+    }
+
+    queueIndex = -1;
+    len = queue.length;
+  }
+
+  currentQueue = null;
+  draining = false;
+  runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+  var args = new Array(arguments.length - 1);
+
+  if (arguments.length > 1) {
+    for (var i = 1; i < arguments.length; i++) {
+      args[i - 1] = arguments[i];
+    }
+  }
+
+  queue.push(new Item(fun, args));
+
+  if (queue.length === 1 && !draining) {
+    runTimeout(drainQueue);
+  }
+}; // v8 likes predictible objects
+
+
+function Item(fun, array) {
+  this.fun = fun;
+  this.array = array;
+}
+
+Item.prototype.run = function () {
+  this.fun.apply(null, this.array);
+};
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) {
+  return [];
+};
+
+process.binding = function (name) {
+  throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () {
+  return '/';
+};
+
+process.chdir = function (dir) {
+  throw new Error('process.chdir is not supported');
+};
+
+process.umask = function () {
+  return 0;
+};
+},{}],"../node_modules/styled-jsx/dist/lib/stylesheet.js":[function(require,module,exports) {
+var process = require("process");
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+/*
+Based on Glamor's sheet
+https://github.com/threepointone/glamor/blob/667b480d31b3721a905021b26e1290ce92ca2879/src/sheet.js
+*/
+
+
+var isProd = process.env && "development" === 'production';
+
+var isString = function isString(o) {
+  return Object.prototype.toString.call(o) === '[object String]';
+};
+
+var StyleSheet = function () {
+  function StyleSheet() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        _ref$name = _ref.name,
+        name = _ref$name === undefined ? 'stylesheet' : _ref$name,
+        _ref$optimizeForSpeed = _ref.optimizeForSpeed,
+        optimizeForSpeed = _ref$optimizeForSpeed === undefined ? isProd : _ref$optimizeForSpeed,
+        _ref$isBrowser = _ref.isBrowser,
+        isBrowser = _ref$isBrowser === undefined ? typeof window !== 'undefined' : _ref$isBrowser;
+
+    _classCallCheck(this, StyleSheet);
+
+    invariant(isString(name), '`name` must be a string');
+    this._name = name;
+    this._deletedRulePlaceholder = '#' + name + '-deleted-rule____{}';
+    invariant(typeof optimizeForSpeed === 'boolean', '`optimizeForSpeed` must be a boolean');
+    this._optimizeForSpeed = optimizeForSpeed;
+    this._isBrowser = isBrowser;
+    this._serverSheet = undefined;
+    this._tags = [];
+    this._injected = false;
+    this._rulesCount = 0;
+    var node = this._isBrowser && document.querySelector('meta[property="csp-nonce"]');
+    this._nonce = node ? node.getAttribute('content') : null;
+  }
+
+  _createClass(StyleSheet, [{
+    key: 'setOptimizeForSpeed',
+    value: function setOptimizeForSpeed(bool) {
+      invariant(typeof bool === 'boolean', '`setOptimizeForSpeed` accepts a boolean');
+      invariant(this._rulesCount === 0, 'optimizeForSpeed cannot be when rules have already been inserted');
+      this.flush();
+      this._optimizeForSpeed = bool;
+      this.inject();
+    }
+  }, {
+    key: 'isOptimizeForSpeed',
+    value: function isOptimizeForSpeed() {
+      return this._optimizeForSpeed;
+    }
+  }, {
+    key: 'inject',
+    value: function inject() {
+      var _this = this;
+
+      invariant(!this._injected, 'sheet already injected');
+      this._injected = true;
+
+      if (this._isBrowser && this._optimizeForSpeed) {
+        this._tags[0] = this.makeStyleTag(this._name);
+        this._optimizeForSpeed = 'insertRule' in this.getSheet();
+
+        if (!this._optimizeForSpeed) {
+          if (!isProd) {
+            console.warn('StyleSheet: optimizeForSpeed mode not supported falling back to standard mode.'); // eslint-disable-line no-console
+          }
+
+          this.flush();
+          this._injected = true;
+        }
+
+        return;
+      }
+
+      this._serverSheet = {
+        cssRules: [],
+        insertRule: function insertRule(rule, index) {
+          if (typeof index === 'number') {
+            _this._serverSheet.cssRules[index] = {
+              cssText: rule
+            };
+          } else {
+            _this._serverSheet.cssRules.push({
+              cssText: rule
+            });
+          }
+
+          return index;
+        },
+        deleteRule: function deleteRule(index) {
+          _this._serverSheet.cssRules[index] = null;
+        }
+      };
+    }
+  }, {
+    key: 'getSheetForTag',
+    value: function getSheetForTag(tag) {
+      if (tag.sheet) {
+        return tag.sheet;
+      } // this weirdness brought to you by firefox
+
+
+      for (var i = 0; i < document.styleSheets.length; i++) {
+        if (document.styleSheets[i].ownerNode === tag) {
+          return document.styleSheets[i];
+        }
+      }
+    }
+  }, {
+    key: 'getSheet',
+    value: function getSheet() {
+      return this.getSheetForTag(this._tags[this._tags.length - 1]);
+    }
+  }, {
+    key: 'insertRule',
+    value: function insertRule(rule, index) {
+      invariant(isString(rule), '`insertRule` accepts only strings');
+
+      if (!this._isBrowser) {
+        if (typeof index !== 'number') {
+          index = this._serverSheet.cssRules.length;
+        }
+
+        this._serverSheet.insertRule(rule, index);
+
+        return this._rulesCount++;
+      }
+
+      if (this._optimizeForSpeed) {
+        var sheet = this.getSheet();
+
+        if (typeof index !== 'number') {
+          index = sheet.cssRules.length;
+        } // this weirdness for perf, and chrome's weird bug
+        // https://stackoverflow.com/questions/20007992/chrome-suddenly-stopped-accepting-insertrule
+
+
+        try {
+          sheet.insertRule(rule, index);
+        } catch (err) {
+          if (!isProd) {
+            console.warn('StyleSheet: illegal rule: \n\n' + rule + '\n\nSee https://stackoverflow.com/q/20007992 for more info'); // eslint-disable-line no-console
+          }
+
+          return -1;
+        }
+      } else {
+        var insertionPoint = this._tags[index];
+
+        this._tags.push(this.makeStyleTag(this._name, rule, insertionPoint));
+      }
+
+      return this._rulesCount++;
+    }
+  }, {
+    key: 'replaceRule',
+    value: function replaceRule(index, rule) {
+      if (this._optimizeForSpeed || !this._isBrowser) {
+        var sheet = this._isBrowser ? this.getSheet() : this._serverSheet;
+
+        if (!rule.trim()) {
+          rule = this._deletedRulePlaceholder;
+        }
+
+        if (!sheet.cssRules[index]) {
+          // @TBD Should we throw an error?
+          return index;
+        }
+
+        sheet.deleteRule(index);
+
+        try {
+          sheet.insertRule(rule, index);
+        } catch (err) {
+          if (!isProd) {
+            console.warn('StyleSheet: illegal rule: \n\n' + rule + '\n\nSee https://stackoverflow.com/q/20007992 for more info'); // eslint-disable-line no-console
+          } // In order to preserve the indices we insert a deleteRulePlaceholder
+
+
+          sheet.insertRule(this._deletedRulePlaceholder, index);
+        }
+      } else {
+        var tag = this._tags[index];
+        invariant(tag, 'old rule at index `' + index + '` not found');
+        tag.textContent = rule;
+      }
+
+      return index;
+    }
+  }, {
+    key: 'deleteRule',
+    value: function deleteRule(index) {
+      if (!this._isBrowser) {
+        this._serverSheet.deleteRule(index);
+
+        return;
+      }
+
+      if (this._optimizeForSpeed) {
+        this.replaceRule(index, '');
+      } else {
+        var tag = this._tags[index];
+        invariant(tag, 'rule at index `' + index + '` not found');
+        tag.parentNode.removeChild(tag);
+        this._tags[index] = null;
+      }
+    }
+  }, {
+    key: 'flush',
+    value: function flush() {
+      this._injected = false;
+      this._rulesCount = 0;
+
+      if (this._isBrowser) {
+        this._tags.forEach(function (tag) {
+          return tag && tag.parentNode.removeChild(tag);
+        });
+
+        this._tags = [];
+      } else {
+        // simpler on server
+        this._serverSheet.cssRules = [];
+      }
+    }
+  }, {
+    key: 'cssRules',
+    value: function cssRules() {
+      var _this2 = this;
+
+      if (!this._isBrowser) {
+        return this._serverSheet.cssRules;
+      }
+
+      return this._tags.reduce(function (rules, tag) {
+        if (tag) {
+          rules = rules.concat(_this2.getSheetForTag(tag).cssRules.map(function (rule) {
+            return rule.cssText === _this2._deletedRulePlaceholder ? null : rule;
+          }));
+        } else {
+          rules.push(null);
+        }
+
+        return rules;
+      }, []);
+    }
+  }, {
+    key: 'makeStyleTag',
+    value: function makeStyleTag(name, cssString, relativeToTag) {
+      if (cssString) {
+        invariant(isString(cssString), 'makeStyleTag acceps only strings as second parameter');
+      }
+
+      var tag = document.createElement('style');
+      if (this._nonce) tag.setAttribute('nonce', this._nonce);
+      tag.type = 'text/css';
+      tag.setAttribute('data-' + name, '');
+
+      if (cssString) {
+        tag.appendChild(document.createTextNode(cssString));
+      }
+
+      var head = document.head || document.getElementsByTagName('head')[0];
+
+      if (relativeToTag) {
+        head.insertBefore(tag, relativeToTag);
+      } else {
+        head.appendChild(tag);
+      }
+
+      return tag;
+    }
+  }, {
+    key: 'length',
+    get: function get() {
+      return this._rulesCount;
+    }
+  }]);
+
+  return StyleSheet;
+}();
+
+exports.default = StyleSheet;
+
+function invariant(condition, message) {
+  if (!condition) {
+    throw new Error('StyleSheet: ' + message + '.');
+  }
+}
+},{"process":"C:/Users/sevta/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../node_modules/styled-jsx/dist/stylesheet-registry.js":[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _stringHash = require('string-hash');
+
+var _stringHash2 = _interopRequireDefault(_stringHash);
+
+var _stylesheet = require('./lib/stylesheet');
+
+var _stylesheet2 = _interopRequireDefault(_stylesheet);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var sanitize = function sanitize(rule) {
+  return rule.replace(/\/style/gi, '\\/style');
+};
+
+var StyleSheetRegistry = function () {
+  function StyleSheetRegistry() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        _ref$styleSheet = _ref.styleSheet,
+        styleSheet = _ref$styleSheet === undefined ? null : _ref$styleSheet,
+        _ref$optimizeForSpeed = _ref.optimizeForSpeed,
+        optimizeForSpeed = _ref$optimizeForSpeed === undefined ? false : _ref$optimizeForSpeed,
+        _ref$isBrowser = _ref.isBrowser,
+        isBrowser = _ref$isBrowser === undefined ? typeof window !== 'undefined' : _ref$isBrowser;
+
+    _classCallCheck(this, StyleSheetRegistry);
+
+    this._sheet = styleSheet || new _stylesheet2.default({
+      name: 'styled-jsx',
+      optimizeForSpeed: optimizeForSpeed
+    });
+
+    this._sheet.inject();
+    if (styleSheet && typeof optimizeForSpeed === 'boolean') {
+      this._sheet.setOptimizeForSpeed(optimizeForSpeed);
+      this._optimizeForSpeed = this._sheet.isOptimizeForSpeed();
+    }
+
+    this._isBrowser = isBrowser;
+
+    this._fromServer = undefined;
+    this._indices = {};
+    this._instancesCounts = {};
+
+    this.computeId = this.createComputeId();
+    this.computeSelector = this.createComputeSelector();
+  }
+
+  _createClass(StyleSheetRegistry, [{
+    key: 'add',
+    value: function add(props) {
+      var _this = this;
+
+      if (undefined === this._optimizeForSpeed) {
+        this._optimizeForSpeed = Array.isArray(props.css);
+        this._sheet.setOptimizeForSpeed(this._optimizeForSpeed);
+        this._optimizeForSpeed = this._sheet.isOptimizeForSpeed();
+      }
+
+      if (this._isBrowser && !this._fromServer) {
+        this._fromServer = this.selectFromServer();
+        this._instancesCounts = Object.keys(this._fromServer).reduce(function (acc, tagName) {
+          acc[tagName] = 0;
+          return acc;
+        }, {});
+      }
+
+      var _getIdAndRules = this.getIdAndRules(props),
+          styleId = _getIdAndRules.styleId,
+          rules = _getIdAndRules.rules;
+
+      // Deduping: just increase the instances count.
+
+
+      if (styleId in this._instancesCounts) {
+        this._instancesCounts[styleId] += 1;
+        return;
+      }
+
+      var indices = rules.map(function (rule) {
+        return _this._sheet.insertRule(rule);
+      })
+      // Filter out invalid rules
+      .filter(function (index) {
+        return index !== -1;
+      });
+
+      this._indices[styleId] = indices;
+      this._instancesCounts[styleId] = 1;
+    }
+  }, {
+    key: 'remove',
+    value: function remove(props) {
+      var _this2 = this;
+
+      var _getIdAndRules2 = this.getIdAndRules(props),
+          styleId = _getIdAndRules2.styleId;
+
+      invariant(styleId in this._instancesCounts, 'styleId: `' + styleId + '` not found');
+      this._instancesCounts[styleId] -= 1;
+
+      if (this._instancesCounts[styleId] < 1) {
+        var tagFromServer = this._fromServer && this._fromServer[styleId];
+        if (tagFromServer) {
+          tagFromServer.parentNode.removeChild(tagFromServer);
+          delete this._fromServer[styleId];
+        } else {
+          this._indices[styleId].forEach(function (index) {
+            return _this2._sheet.deleteRule(index);
+          });
+          delete this._indices[styleId];
+        }
+        delete this._instancesCounts[styleId];
+      }
+    }
+  }, {
+    key: 'update',
+    value: function update(props, nextProps) {
+      this.add(nextProps);
+      this.remove(props);
+    }
+  }, {
+    key: 'flush',
+    value: function flush() {
+      this._sheet.flush();
+      this._sheet.inject();
+      this._fromServer = undefined;
+      this._indices = {};
+      this._instancesCounts = {};
+
+      this.computeId = this.createComputeId();
+      this.computeSelector = this.createComputeSelector();
+    }
+  }, {
+    key: 'cssRules',
+    value: function cssRules() {
+      var _this3 = this;
+
+      var fromServer = this._fromServer ? Object.keys(this._fromServer).map(function (styleId) {
+        return [styleId, _this3._fromServer[styleId]];
+      }) : [];
+      var cssRules = this._sheet.cssRules();
+
+      return fromServer.concat(Object.keys(this._indices).map(function (styleId) {
+        return [styleId, _this3._indices[styleId].map(function (index) {
+          return cssRules[index].cssText;
+        }).join('\n')];
+      })
+      // filter out empty rules
+      .filter(function (rule) {
+        return Boolean(rule[1]);
+      }));
+    }
+
+    /**
+     * createComputeId
+     *
+     * Creates a function to compute and memoize a jsx id from a basedId and optionally props.
+     */
+
+  }, {
+    key: 'createComputeId',
+    value: function createComputeId() {
+      var cache = {};
+      return function (baseId, props) {
+        if (!props) {
+          return 'jsx-' + baseId;
+        }
+        var propsToString = String(props);
+        var key = baseId + propsToString;
+        // return `jsx-${hashString(`${baseId}-${propsToString}`)}`
+        if (!cache[key]) {
+          cache[key] = 'jsx-' + (0, _stringHash2.default)(baseId + '-' + propsToString);
+        }
+        return cache[key];
+      };
+    }
+
+    /**
+     * createComputeSelector
+     *
+     * Creates a function to compute and memoize dynamic selectors.
+     */
+
+  }, {
+    key: 'createComputeSelector',
+    value: function createComputeSelector() {
+      var selectoPlaceholderRegexp = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : /__jsx-style-dynamic-selector/g;
+
+      var cache = {};
+      return function (id, css) {
+        // Sanitize SSR-ed CSS.
+        // Client side code doesn't need to be sanitized since we use
+        // document.createTextNode (dev) and the CSSOM api sheet.insertRule (prod).
+        if (!this._isBrowser) {
+          css = sanitize(css);
+        }
+        var idcss = id + css;
+        if (!cache[idcss]) {
+          cache[idcss] = css.replace(selectoPlaceholderRegexp, id);
+        }
+        return cache[idcss];
+      };
+    }
+  }, {
+    key: 'getIdAndRules',
+    value: function getIdAndRules(props) {
+      var _this4 = this;
+
+      if (props.dynamic) {
+        var styleId = this.computeId(props.styleId, props.dynamic);
+        return {
+          styleId: styleId,
+          rules: Array.isArray(props.css) ? props.css.map(function (rule) {
+            return _this4.computeSelector(styleId, rule);
+          }) : [this.computeSelector(styleId, props.css)]
+        };
+      }
+
+      return {
+        styleId: this.computeId(props.styleId),
+        rules: Array.isArray(props.css) ? props.css : [props.css]
+      };
+    }
+
+    /**
+     * selectFromServer
+     *
+     * Collects style tags from the document with id __jsx-XXX
+     */
+
+  }, {
+    key: 'selectFromServer',
+    value: function selectFromServer() {
+      var elements = Array.prototype.slice.call(document.querySelectorAll('[id^="__jsx-"]'));
+
+      return elements.reduce(function (acc, element) {
+        var id = element.id.slice(2);
+        acc[id] = element;
+        return acc;
+      }, {});
+    }
+  }]);
+
+  return StyleSheetRegistry;
+}();
+
+exports.default = StyleSheetRegistry;
+
+
+function invariant(condition, message) {
+  if (!condition) {
+    throw new Error('StyleSheetRegistry: ' + message + '.');
+  }
+}
+},{"string-hash":"../node_modules/string-hash/index.js","./lib/stylesheet":"../node_modules/styled-jsx/dist/lib/stylesheet.js"}],"../node_modules/styled-jsx/dist/style.js":[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.flush = flush;
+
+var _react = require('react');
+
+var _stylesheetRegistry = require('./stylesheet-registry');
+
+var _stylesheetRegistry2 = _interopRequireDefault(_stylesheetRegistry);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var styleSheetRegistry = new _stylesheetRegistry2.default();
+
+var JSXStyle = function (_Component) {
+  _inherits(JSXStyle, _Component);
+
+  function JSXStyle(props) {
+    _classCallCheck(this, JSXStyle);
+
+    var _this = _possibleConstructorReturn(this, (JSXStyle.__proto__ || Object.getPrototypeOf(JSXStyle)).call(this, props));
+
+    _this.prevProps = {};
+    return _this;
+  }
+
+  _createClass(JSXStyle, [{
+    key: 'shouldComponentUpdate',
+
+
+    // probably faster than PureComponent (shallowEqual)
+    value: function shouldComponentUpdate(otherProps) {
+      return this.props.styleId !== otherProps.styleId ||
+      // We do this check because `dynamic` is an array of strings or undefined.
+      // These are the computed values for dynamic styles.
+      String(this.props.dynamic) !== String(otherProps.dynamic);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      styleSheetRegistry.remove(this.props);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      // This is a workaround to make the side effect async safe in the "render" phase.
+      // See https://github.com/zeit/styled-jsx/pull/484
+      if (this.shouldComponentUpdate(this.prevProps)) {
+        // Updates
+        if (this.prevProps.styleId) {
+          styleSheetRegistry.remove(this.prevProps);
+        }
+        styleSheetRegistry.add(this.props);
+        this.prevProps = this.props;
+      }
+      return null;
+    }
+  }], [{
+    key: 'dynamic',
+    value: function dynamic(info) {
+      return info.map(function (tagInfo) {
+        var baseId = tagInfo[0];
+        var props = tagInfo[1];
+        return styleSheetRegistry.computeId(baseId, props);
+      }).join(' ');
+    }
+  }]);
+
+  return JSXStyle;
+}(_react.Component);
+
+exports.default = JSXStyle;
+function flush() {
+  var cssRules = styleSheetRegistry.cssRules();
+  styleSheetRegistry.flush();
+  return cssRules;
+}
+},{"react":"../node_modules/react/index.js","./stylesheet-registry":"../node_modules/styled-jsx/dist/stylesheet-registry.js"}],"../node_modules/styled-jsx/style.js":[function(require,module,exports) {
+module.exports = require('./dist/style')
+
+},{"./dist/style":"../node_modules/styled-jsx/dist/style.js"}],"pages/details/backdrop.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = BackDrop;
+
+var _style = _interopRequireDefault(require("styled-jsx/style"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var _api = require("../../utils/api");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function BackDrop(_ref) {
+  var img = _ref.img;
+  return _react.default.createElement("div", {
+    className: "jsx-611471501" + " " + 'w-full bg-grey-lightest overflow-hidden backdrop-container'
+  }, _react.default.createElement("img", {
+    src: "".concat(_api.imgUrl, "original").concat(img),
+    alt: "",
+    className: "jsx-611471501" + " " + 'img w-full'
+  }), _react.default.createElement(_style.default, {
+    styleId: "611471501",
+    css: ".backdrop-container.jsx-611471501{height:600px;}@media (max-width:1366px){.backdrop-container.jsx-611471501{height:300px;}}.img.jsx-611471501{width:100%;height:100%;object-fit:cover;object-position:top;}"
+  }));
+}
+},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js","../../utils/api":"utils/api.js"}],"pages/details/movieDetails.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31172,12 +32135,73 @@ exports.default = MovieDetails;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _api = require("../../utils/api");
+
+var _backdrop = _interopRequireDefault(require("./backdrop"));
+
+var _app = require("../../app");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function MovieDetails() {
-  return _react.default.createElement("div", null, _react.default.createElement("h1", null, "details"));
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function MovieDetails(_ref) {
+  var match = _ref.match;
+
+  var context = _react.default.useContext(_app.MovieContext);
+
+  var _React$useState = _react.default.useState(''),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      movieID = _React$useState2[0],
+      setMovieID = _React$useState2[1];
+
+  var _React$useState3 = _react.default.useState([]),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      movieDetails = _React$useState4[0],
+      setMovieDetails = _React$useState4[1];
+
+  var _React$useState5 = _react.default.useState(true),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
+      loading = _React$useState6[0],
+      setLoading = _React$useState6[1];
+
+  _react.default.useEffect(function () {
+    var mID = match.params.movieId;
+    var url = (0, _api.fetchUrl)(_api.apikey, "movie/".concat(mID));
+    context.setCurrentUrl(match.path);
+    fetch(url).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      return setMovieDetails(data);
+    }).catch(function (err) {
+      return console.error(err);
+    });
+  }, []);
+
+  _react.default.useEffect(function () {
+    if (movieDetails) {
+      setLoading(false);
+    }
+  }, [movieDetails]);
+
+  return _react.default.createElement("div", null, loading ? _react.default.createElement("h1", null, "Loading...") : _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_backdrop.default, {
+    img: movieDetails.backdrop_path
+  }), _react.default.createElement("div", {
+    className: "movie-details-content",
+    style: {
+      height: '200vh'
+    }
+  }, _react.default.createElement("div", {
+    className: "container mx-auto"
+  }, _react.default.createElement("h1", null, "content goes here")))));
 }
-},{"react":"../node_modules/react/index.js"}],"component/popup.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../utils/api":"utils/api.js","./backdrop":"pages/details/backdrop.js","../../app":"app.js"}],"component/popup.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31187,23 +32211,156 @@ exports.default = Popup;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _app = require("../app");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function Popup(_ref) {
   var show = _ref.show;
+
+  var _React$useContext = _react.default.useContext(_app.UserContext),
+      userState = _React$useContext.userState,
+      setUser = _React$useContext.setUser,
+      setIsNewUser = _React$useContext.setIsNewUser;
+
+  var _React$useState = _react.default.useState(''),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      value = _React$useState2[0],
+      setValue = _React$useState2[1];
+
+  var _React$useState3 = _react.default.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      submited = _React$useState4[0],
+      setSubmited = _React$useState4[1];
+  /**
+   * TODO:
+   * basic validate input username
+   * 
+   */
+
+
+  function onChange(e) {
+    var val = e.target.value;
+    setValue(val);
+  }
+
+  _react.default.useEffect(function () {
+    if (submited) {
+      setIsNewUser(false);
+      localStorage.setItem('user', JSON.stringify(userState));
+    }
+  }, [userState]);
+
+  function onSubmit(e) {
+    e.preventDefault();
+    setUser(_objectSpread({}, userState, {
+      username: value
+    }));
+    setSubmited(true);
+  }
+
   return show && _react.default.createElement("div", {
     className: "popup bg-black fixed pin-y pin-x flex items-center justify-center z-50"
   }, _react.default.createElement("div", {
-    className: "popup-inner bg-white p-2"
-  }, _react.default.createElement("h1", null, "username")));
+    className: "popup-inner bg-white py-2 px-5"
+  }, _react.default.createElement("form", {
+    className: "form",
+    onSubmit: onSubmit
+  }, _react.default.createElement("div", {
+    className: ""
+  }, _react.default.createElement("input", {
+    type: "text",
+    placeholder: "username",
+    onChange: onChange,
+    className: "w-full border py-2 px-2"
+  })))));
 }
-},{"react":"../node_modules/react/index.js"}],"app.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../app":"app.js"}],"component/navbar/navbar.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.MovieContext = exports.AppContext = void 0;
+exports.default = Navbar;
+
+var _style = _interopRequireDefault(require("styled-jsx/style"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var _app = require("../../app");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function Navbar() {
+  var _React$useContext = _react.default.useContext(_app.MovieContext),
+      currentUrl = _React$useContext.currentUrl;
+
+  var _React$useContext2 = _react.default.useContext(_app.UserContext),
+      userState = _React$useContext2.userState;
+
+  var _React$useState = _react.default.useState(''),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      classes = _React$useState2[0],
+      setClasses = _React$useState2[1];
+
+  _react.default.useEffect(function () {
+    console.log('username', userState);
+  }, [userState]);
+
+  _react.default.useEffect(function () {
+    if (currentUrl == '/details/:movieId') {
+      setClasses('in-page-details');
+    } else {
+      setClasses('');
+    }
+  }, [currentUrl]);
+
+  return _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "w-full px-2 py-6 shadow bg-white ".concat(classes)
+  }, _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "container flex mx-auto items-center justify-between"
+  }, _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "left"
+  }, _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "logo font-bold text-2xl"
+  }, "logo")), _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "right flex"
+  }, _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "user-info"
+  }, _react.default.createElement("div", {
+    className: "jsx-3511888227" + " " + "username font-bold"
+  }, userState.username)))), _react.default.createElement(_style.default, {
+    styleId: "3511888227",
+    css: ".in-page-details.jsx-3511888227{position:absolute;top:600px;}@media (max-width:1366px){.in-page-details.jsx-3511888227{top:300px;}}"
+  }));
+}
+},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js","../../app":"app.js"}],"app.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MovieContext = exports.UserContext = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -31216,6 +32373,8 @@ var _home = _interopRequireDefault(require("./pages/home/home"));
 var _movieDetails = _interopRequireDefault(require("./pages/details/movieDetails"));
 
 var _popup = _interopRequireDefault(require("./component/popup"));
+
+var _navbar = _interopRequireDefault(require("./component/navbar/navbar"));
 
 var _api = require("./utils/api");
 
@@ -31268,24 +32427,22 @@ function movieReducer(state, action) {
   }
 }
 
-var AppContext = _react.default.createContext('AppContext');
+var UserContext = _react.default.createContext('AppContext');
 
-exports.AppContext = AppContext;
+exports.UserContext = UserContext;
 
 var MovieContext = _react.default.createContext('MovieContext');
 
 exports.MovieContext = MovieContext;
 
 function Roots() {
-  var _React$useReducer = _react.default.useReducer(userReducer, initUserState),
+  // reducer
+  // const [userState , userDispatch] = React.useReducer(userReducer , initUserState)
+  var _React$useReducer = _react.default.useReducer(movieReducer, initMovieState),
       _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
-      userState = _React$useReducer2[0],
-      userDispatch = _React$useReducer2[1];
+      movieState = _React$useReducer2[0],
+      movieDispatch = _React$useReducer2[1]; // state movies
 
-  var _React$useReducer3 = _react.default.useReducer(movieReducer, initMovieState),
-      _React$useReducer4 = _slicedToArray(_React$useReducer3, 2),
-      movieState = _React$useReducer4[0],
-      movieDispatch = _React$useReducer4[1];
 
   var _React$useState = _react.default.useState([]),
       _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -31297,10 +32454,29 @@ function Roots() {
       moviesTrending = _React$useState4[0],
       setMoviesTrending = _React$useState4[1];
 
-  var _React$useState5 = _react.default.useState(5),
+  var _React$useState5 = _react.default.useState(1),
       _React$useState6 = _slicedToArray(_React$useState5, 2),
       currentPage = _React$useState6[0],
       _setCurrentPage = _React$useState6[1];
+
+  var _React$useState7 = _react.default.useState(''),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
+      currentUrl = _React$useState8[0],
+      _setCurrentUrl = _React$useState8[1]; // user state
+
+
+  var _React$useState9 = _react.default.useState(false),
+      _React$useState10 = _slicedToArray(_React$useState9, 2),
+      isNewUser = _React$useState10[0],
+      _setIsNewUser = _React$useState10[1];
+
+  var _React$useState11 = _react.default.useState({
+    username: '',
+    wishlist: []
+  }),
+      _React$useState12 = _slicedToArray(_React$useState11, 2),
+      userState = _React$useState12[0],
+      _setUser = _React$useState12[1];
 
   function fetchUrl(query, page) {
     var url = "".concat(_api.apiUrl).concat(query, "?api_key=").concat(_api.apikey, "&region=ID&page=").concat(page, "}");
@@ -31320,21 +32496,35 @@ function Roots() {
       }
     });
     console.log('current page change', currentPage);
-  }, [currentPage]); // React.useEffect(() => {
-  //   // fetch now playing
-  //   fetchMovies(fetchUrl('movie/now_playing' , 1) , (err , data) => {
-  //     if (err) throw err
-  //     movieDispatch({ type: 'init movies' , payload: data })
-  //     setMovies(data)
-  //   })
-  //   // fetch top rated data
-  //   fetchMovies(fetchUrl('movie/popular' , 1) , (err , data) => {
-  //     if (err) throw err
-  //     console.log('top rated'  , data)
-  //     setMoviesTrending(data)
-  //   })
-  // } , [])
+  }, [currentPage]); // didmount
 
+
+  _react.default.useEffect(function () {
+    var userStorage = localStorage.getItem('user'); // fetch now playing
+
+    fetchMovies(fetchUrl('movie/now_playing', 1), function (err, data) {
+      if (err) throw err;
+      movieDispatch({
+        type: 'init movies',
+        payload: data
+      });
+      setMovies(data);
+    }); // fetch top rated data
+
+    fetchMovies(fetchUrl('movie/popular', 1), function (err, data) {
+      if (err) throw err;
+      console.log('top rated', data);
+      setMoviesTrending(data);
+    });
+
+    if (userStorage == null) {
+      _setIsNewUser(true);
+    } else {
+      console.log('current user', userStorage);
+
+      _setUser(userStorage);
+    }
+  }, []);
 
   var fetchMovies = function fetchMovies(url, callback) {
     var err = false;
@@ -31349,10 +32539,16 @@ function Roots() {
     });
   };
 
-  return _react.default.createElement(AppContext.Provider, {
+  return _react.default.createElement(UserContext.Provider, {
     value: {
       userState: userState,
-      userDispatch: userDispatch
+      setUser: function setUser(payload) {
+        return _setUser(payload);
+      },
+      isNewUser: isNewUser,
+      setIsNewUser: function setIsNewUser(payload) {
+        return _setIsNewUser(payload);
+      }
     }
   }, _react.default.createElement(MovieContext.Provider, {
     value: {
@@ -31363,11 +32559,15 @@ function Roots() {
       currentPage: currentPage,
       setCurrentPage: function setCurrentPage(payload) {
         return _setCurrentPage(payload);
+      },
+      currentUrl: currentUrl,
+      setCurrentUrl: function setCurrentUrl(payload) {
+        return _setCurrentUrl(payload);
       }
     }
   }, _react.default.createElement(_popup.default, {
-    show: false
-  }), _react.default.createElement(_reactRouterDom.HashRouter, null, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
+    show: isNewUser
+  }), _react.default.createElement(_navbar.default, null), _react.default.createElement(_reactRouterDom.HashRouter, null, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
     exact: true,
     path: "/",
     component: _home.default
@@ -31381,5 +32581,5 @@ function Roots() {
 var app = document.querySelector('#app');
 
 _reactDom.default.render(_react.default.createElement(Roots, null), app);
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js","./pages/details/movieDetails":"pages/details/movieDetails.js","./component/popup":"component/popup.js","./utils/api":"utils/api.js"}]},{},["app.js"], null)
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","./pages/home/home":"pages/home/home.js","./pages/details/movieDetails":"pages/details/movieDetails.js","./component/popup":"component/popup.js","./component/navbar/navbar":"component/navbar/navbar.js","./utils/api":"utils/api.js"}]},{},["app.js"], null)
 //# sourceMappingURL=/app.c328ef1a.map

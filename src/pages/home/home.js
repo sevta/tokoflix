@@ -8,7 +8,14 @@ import Pagination from 'react-js-pagination'
 
 function Home(props) {
   // movie context
-  const {movieState , movies , moviesTrending , currentPage , setCurrentPage} = React.useContext(MovieContext)
+  const {
+    movieState , 
+    movies , 
+    moviesTrending , 
+    currentPage , 
+    setCurrentPage , 
+    setCurrentUrl
+  } = React.useContext(MovieContext)
 
   // render per movie
   const renderMovie = (movies) => {
@@ -19,6 +26,10 @@ function Home(props) {
     )
   }
 
+  React.useEffect(() => {
+    setCurrentUrl('/')
+  } , [])
+
   // handlechange per page
   function handlePageChange(pageNumber) {
     setCurrentPage(pageNumber)
@@ -27,7 +38,11 @@ function Home(props) {
   // set current page if state current page changed
   React.useEffect(() => {
     console.log('page change' , currentPage)
-    props.history.push(`/?page=${currentPage}`)
+    if (currentPage == 1) {
+      props.history.push(`/`)      
+    } else {
+      props.history.push(`/?page=${currentPage}`)
+    }
   } , [currentPage])
 
   return (
@@ -35,13 +50,6 @@ function Home(props) {
       <div className="container mx-auto mb-10">
         <h1 className='text-center text-5xl'>Tokoflix</h1>    
       </div>
-      <Pagination 
-        activePage={currentPage}
-        itemsCountPerPage={2} 
-        totalItemsCount={20}
-        pageRangDisplayed={5}
-        onChange={handlePageChange}
-      />
       <div>
         <div className="container mx-auto">
           <h1 className='ml-5 text-green'>indonesia</h1>
@@ -58,6 +66,13 @@ function Home(props) {
           {renderMovie(moviesTrending)}
         </div>
       </div>
+      <Pagination 
+        activePage={currentPage}
+        itemsCountPerPage={2} 
+        totalItemsCount={20}
+        pageRangDisplayed={5}
+        onChange={handlePageChange}
+      />
     </div>
   )
 }

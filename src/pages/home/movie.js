@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom'
 import { imgUrl } from '../../utils/api'
 
 export default function Movie({details}) {
-  React.useEffect(() => {
- 
-  } , [])
-
   function setPrice(vote) {
     switch (vote) {
       case (vote === 0) : {

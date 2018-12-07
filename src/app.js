@@ -7,6 +7,9 @@ import Home from './pages/home/home'
 import MovieDetails from './pages/details/movieDetails'
 import Popup from './component/popup'
 
+// component
+import Navbar from './component/navbar/navbar'
+
 // utils
 import { apikey , apiUrl } from './utils/api'
 
@@ -42,15 +45,26 @@ function movieReducer(state , action) {
   }
 }
 
-export const AppContext = React.createContext('AppContext')
+export const UserContext = React.createContext('AppContext')
 export const MovieContext = React.createContext('MovieContext')
 
 function Roots() {
-  const [userState , userDispatch] = React.useReducer(userReducer , initUserState)
+  // reducer
+  // const [userState , userDispatch] = React.useReducer(userReducer , initUserState)
   const [movieState , movieDispatch] = React.useReducer(movieReducer , initMovieState)
+
+  // state movies
   const [movies , setMovies] = React.useState([])
   const [moviesTrending , setMoviesTrending] = React.useState([])
-  const [currentPage , setCurrentPage] = React.useState(5)
+  const [currentPage , setCurrentPage] = React.useState(1)
+  const [currentUrl , setCurrentUrl] = React.useState('')
+
+  // user state
+  const [isNewUser , setIsNewUser] = React.useState(false)
+  const [userState , setUser] = React.useState({
+    username: '' ,
+    wishlist: []
+  })
 
   function fetchUrl(query , page) {
     let url = `${apiUrl}${query}?api_key=${apikey}&region=ID&page=${page}}`
@@ -72,21 +86,34 @@ function Roots() {
     console.log('current page change' , currentPage)
   } , [currentPage])
 
-  // React.useEffect(() => {
-  //   // fetch now playing
-  //   fetchMovies(fetchUrl('movie/now_playing' , 1) , (err , data) => {
-  //     if (err) throw err
-  //     movieDispatch({ type: 'init movies' , payload: data })
-  //     setMovies(data)
-  //   })
 
-  //   // fetch top rated data
-  //   fetchMovies(fetchUrl('movie/popular' , 1) , (err , data) => {
-  //     if (err) throw err
-  //     console.log('top rated'  , data)
-  //     setMoviesTrending(data)
-  //   })
-  // } , [])
+  // didmount
+  React.useEffect(() => {
+    let userStorage = localStorage.getItem('user')
+    
+    // fetch now playing
+    fetchMovies(fetchUrl('movie/now_playing' , 1) , (err , data) => {
+      if (err) throw err
+      movieDispatch({ type: 'init movies' , payload: data })
+      setMovies(data)
+    })
+
+    // fetch top rated data
+    fetchMovies(fetchUrl('movie/popular' , 1) , (err , data) => {
+      if (err) throw err
+      console.log('top rated'  , data)
+      setMoviesTrending(data)
+    })
+
+    if (userStorage == null) {
+      setIsNewUser(true)
+    } else {
+      console.log('current user' , userStorage)
+      setUser(userStorage)
+    }
+    
+  } , [])
+
 
   const fetchMovies = (url , callback) => {
     let err = false
@@ -104,7 +131,14 @@ function Roots() {
 
 
   return (
-    <AppContext.Provider value={{userState , userDispatch}}>
+    <UserContext.Provider value={
+      {
+        userState , 
+        setUser: payload => setUser(payload) ,
+        isNewUser ,
+        setIsNewUser: payload => setIsNewUser(payload)
+      }
+    }>
       <MovieContext.Provider value={
         {
           movieState , 
@@ -112,10 +146,13 @@ function Roots() {
           movies , 
           moviesTrending ,
           currentPage ,
-          setCurrentPage: payload => setCurrentPage(payload)
+          setCurrentPage: payload => setCurrentPage(payload) ,
+          currentUrl ,
+          setCurrentUrl: payload => setCurrentUrl(payload)
         }
       }>
-        <Popup show={false} />
+        <Popup show={isNewUser} />
+        <Navbar />
         <HashRouter>
           <Switch>
             <Route exact path='/' component={Home} />
@@ -123,7 +160,7 @@ function Roots() {
           </Switch>
         </HashRouter>
       </MovieContext.Provider>
-    </AppContext.Provider>
+    </UserContext.Provider>
   )  
 }
 
