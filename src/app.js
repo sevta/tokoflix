@@ -50,30 +50,47 @@ function Roots() {
   const [movieState , movieDispatch] = React.useReducer(movieReducer , initMovieState)
   const [movies , setMovies] = React.useState([])
   const [moviesTrending , setMoviesTrending] = React.useState([])
+  const [currentPage , setCurrentPage] = React.useState(5)
 
-  function fetchUrl(query , region) {
-    return `${apiUrl}${query}?api_key=${apikey}&region=ID`
+  function fetchUrl(query , page) {
+    let url = `${apiUrl}${query}?api_key=${apikey}&region=ID&page=${page}}`
+    console.log(url)
+    return url
   }
-
+  
   React.useEffect(() => {
-    // fetch now playing
-    fetchMovies('movie/now_playing' , (err , data) => {
-      if (err) throw err
-      movieDispatch({ type: 'init movies' , payload: data })
-      setMovies(data)
-    })
-
     // fetch top rated data
-    fetchMovies('movie/popular' , (err , data) => {
-      if (err) throw err
-      console.log('top rated'  , data)
-      setMoviesTrending(data)
+    console.log('fetch url' , fetchUrl('movie/popular' , 20))
+    fetchMovies(fetchUrl('movie/popular' , 20) , (err , data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('top rated'  , data)
+        setMoviesTrending(data)
+      }
     })
-  } , [])
+    console.log('current page change' , currentPage)
+  } , [currentPage])
+
+  // React.useEffect(() => {
+  //   // fetch now playing
+  //   fetchMovies(fetchUrl('movie/now_playing' , 1) , (err , data) => {
+  //     if (err) throw err
+  //     movieDispatch({ type: 'init movies' , payload: data })
+  //     setMovies(data)
+  //   })
+
+  //   // fetch top rated data
+  //   fetchMovies(fetchUrl('movie/popular' , 1) , (err , data) => {
+  //     if (err) throw err
+  //     console.log('top rated'  , data)
+  //     setMoviesTrending(data)
+  //   })
+  // } , [])
 
   const fetchMovies = (url , callback) => {
     let err = false
-    fetch(fetchUrl(url))
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         err = false
@@ -88,12 +105,21 @@ function Roots() {
 
   return (
     <AppContext.Provider value={{userState , userDispatch}}>
-      <MovieContext.Provider value={{movieState , movieDispatch , movies , moviesTrending}}>
+      <MovieContext.Provider value={
+        {
+          movieState , 
+          movieDispatch , 
+          movies , 
+          moviesTrending ,
+          currentPage ,
+          setCurrentPage: payload => setCurrentPage(payload)
+        }
+      }>
         <Popup show={false} />
         <HashRouter>
           <Switch>
             <Route exact path='/' component={Home} />
-            <Route exact path='/details' component={MovieDetails} />
+            <Route exact path='/details/:movieId' component={MovieDetails} />
           </Switch>
         </HashRouter>
       </MovieContext.Provider>

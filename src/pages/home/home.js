@@ -4,11 +4,13 @@ import { apikey , apiUrl } from '../../utils/api'
 import queryString from 'query-string' 
 import Movie from './movie'
 import { Link } from 'react-router-dom'
+import Pagination from 'react-js-pagination'
 
 function Home(props) {
-  const {movieState , movies , moviesTrending} = React.useContext(MovieContext)
-  const [currentPage , setCurrentPage] = React.useState(1)
-  
+  // movie context
+  const {movieState , movies , moviesTrending , currentPage , setCurrentPage} = React.useContext(MovieContext)
+
+  // render per movie
   const renderMovie = (movies) => {
     return movies.length !== 0 ? movies.results.map((movie , i) => (
       <Movie key={i} details={movie} />
@@ -17,20 +19,29 @@ function Home(props) {
     )
   }
 
+  // handlechange per page
+  function handlePageChange(pageNumber) {
+    setCurrentPage(pageNumber)
+  }
+
+  // set current page if state current page changed
   React.useEffect(() => {
-    let param = props.location.search
-    console.log('param' , queryString.parse(param))
-    console.log(props)
-  })
+    console.log('page change' , currentPage)
+    props.history.push(`/?page=${currentPage}`)
+  } , [currentPage])
 
   return (
     <div className='w-full mt-12'>
       <div className="container mx-auto mb-10">
         <h1 className='text-center text-5xl'>Tokoflix</h1>    
       </div>
-      <button onClick={() => setCurrentPage(prev => prev+1)}>
-        <Link to={`/?page=${currentPage}`}>goto</Link>
-      </button>
+      <Pagination 
+        activePage={currentPage}
+        itemsCountPerPage={2} 
+        totalItemsCount={20}
+        pageRangDisplayed={5}
+        onChange={handlePageChange}
+      />
       <div>
         <div className="container mx-auto">
           <h1 className='ml-5 text-green'>indonesia</h1>
