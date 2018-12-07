@@ -28679,7 +28679,326 @@ var apiUrl = 'https://api.themoviedb.org/3/';
 exports.apiUrl = apiUrl;
 var imgUrl = 'https://image.tmdb.org/t/p/';
 exports.imgUrl = imgUrl;
-},{}],"pages/home/movie.js":[function(require,module,exports) {
+},{}],"../node_modules/strict-uri-encode/index.js":[function(require,module,exports) {
+'use strict';
+
+module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => "%".concat(x.charCodeAt(0).toString(16).toUpperCase()));
+},{}],"../node_modules/decode-uri-component/index.js":[function(require,module,exports) {
+'use strict';
+
+var token = '%[a-f0-9]{2}';
+var singleMatcher = new RegExp(token, 'gi');
+var multiMatcher = new RegExp('(' + token + ')+', 'gi');
+
+function decodeComponents(components, split) {
+  try {
+    // Try to decode the entire string first
+    return decodeURIComponent(components.join(''));
+  } catch (err) {// Do nothing
+  }
+
+  if (components.length === 1) {
+    return components;
+  }
+
+  split = split || 1; // Split the array in 2 parts
+
+  var left = components.slice(0, split);
+  var right = components.slice(split);
+  return Array.prototype.concat.call([], decodeComponents(left), decodeComponents(right));
+}
+
+function decode(input) {
+  try {
+    return decodeURIComponent(input);
+  } catch (err) {
+    var tokens = input.match(singleMatcher);
+
+    for (var i = 1; i < tokens.length; i++) {
+      input = decodeComponents(tokens, i).join('');
+      tokens = input.match(singleMatcher);
+    }
+
+    return input;
+  }
+}
+
+function customDecodeURIComponent(input) {
+  // Keep track of all the replacements and prefill the map with the `BOM`
+  var replaceMap = {
+    '%FE%FF': '\uFFFD\uFFFD',
+    '%FF%FE': '\uFFFD\uFFFD'
+  };
+  var match = multiMatcher.exec(input);
+
+  while (match) {
+    try {
+      // Decode as big chunks as possible
+      replaceMap[match[0]] = decodeURIComponent(match[0]);
+    } catch (err) {
+      var result = decode(match[0]);
+
+      if (result !== match[0]) {
+        replaceMap[match[0]] = result;
+      }
+    }
+
+    match = multiMatcher.exec(input);
+  } // Add `%C2` at the end of the map to make sure it does not replace the combinator before everything else
+
+
+  replaceMap['%C2'] = '\uFFFD';
+  var entries = Object.keys(replaceMap);
+
+  for (var i = 0; i < entries.length; i++) {
+    // Replace all decoded components
+    var key = entries[i];
+    input = input.replace(new RegExp(key, 'g'), replaceMap[key]);
+  }
+
+  return input;
+}
+
+module.exports = function (encodedURI) {
+  if (typeof encodedURI !== 'string') {
+    throw new TypeError('Expected `encodedURI` to be of type `string`, got `' + typeof encodedURI + '`');
+  }
+
+  try {
+    encodedURI = encodedURI.replace(/\+/g, ' '); // Try the built in decoder first
+
+    return decodeURIComponent(encodedURI);
+  } catch (err) {
+    // Fallback to a more advanced decoder
+    return customDecodeURIComponent(encodedURI);
+  }
+};
+},{}],"../node_modules/query-string/index.js":[function(require,module,exports) {
+'use strict';
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function (obj) { return typeof obj; }; } else { _typeof = function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var strictUriEncode = require('strict-uri-encode');
+
+var decodeComponent = require('decode-uri-component');
+
+function encoderForArrayFormat(options) {
+  switch (options.arrayFormat) {
+    case 'index':
+      return function (key, value, index) {
+        return value === null ? [encode(key, options), '[', index, ']'].join('') : [encode(key, options), '[', encode(index, options), ']=', encode(value, options)].join('');
+      };
+
+    case 'bracket':
+      return function (key, value) {
+        return value === null ? [encode(key, options), '[]'].join('') : [encode(key, options), '[]=', encode(value, options)].join('');
+      };
+
+    default:
+      return function (key, value) {
+        return value === null ? encode(key, options) : [encode(key, options), '=', encode(value, options)].join('');
+      };
+  }
+}
+
+function parserForArrayFormat(options) {
+  var result;
+
+  switch (options.arrayFormat) {
+    case 'index':
+      return function (key, value, accumulator) {
+        result = /\[(\d*)\]$/.exec(key);
+        key = key.replace(/\[\d*\]$/, '');
+
+        if (!result) {
+          accumulator[key] = value;
+          return;
+        }
+
+        if (accumulator[key] === undefined) {
+          accumulator[key] = {};
+        }
+
+        accumulator[key][result[1]] = value;
+      };
+
+    case 'bracket':
+      return function (key, value, accumulator) {
+        result = /(\[\])$/.exec(key);
+        key = key.replace(/\[\]$/, '');
+
+        if (!result) {
+          accumulator[key] = value;
+          return;
+        }
+
+        if (accumulator[key] === undefined) {
+          accumulator[key] = [value];
+          return;
+        }
+
+        accumulator[key] = [].concat(accumulator[key], value);
+      };
+
+    default:
+      return function (key, value, accumulator) {
+        if (accumulator[key] === undefined) {
+          accumulator[key] = value;
+          return;
+        }
+
+        accumulator[key] = [].concat(accumulator[key], value);
+      };
+  }
+}
+
+function encode(value, options) {
+  if (options.encode) {
+    return options.strict ? strictUriEncode(value) : encodeURIComponent(value);
+  }
+
+  return value;
+}
+
+function decode(value, options) {
+  if (options.decode) {
+    return decodeComponent(value);
+  }
+
+  return value;
+}
+
+function keysSorter(input) {
+  if (Array.isArray(input)) {
+    return input.sort();
+  }
+
+  if (_typeof(input) === 'object') {
+    return keysSorter(Object.keys(input)).sort(function (a, b) {
+      return Number(a) - Number(b);
+    }).map(function (key) {
+      return input[key];
+    });
+  }
+
+  return input;
+}
+
+function extract(input) {
+  var queryStart = input.indexOf('?');
+
+  if (queryStart === -1) {
+    return '';
+  }
+
+  return input.slice(queryStart + 1);
+}
+
+function parse(input, options) {
+  options = Object.assign({
+    decode: true,
+    arrayFormat: 'none'
+  }, options);
+  var formatter = parserForArrayFormat(options); // Create an object with no prototype
+
+  var ret = Object.create(null);
+
+  if (typeof input !== 'string') {
+    return ret;
+  }
+
+  input = input.trim().replace(/^[?#&]/, '');
+
+  if (!input) {
+    return ret;
+  }
+
+  for (var param of input.split('&')) {
+    var [key, value] = param.replace(/\+/g, ' ').split('='); // Missing `=` should be `null`:
+    // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+
+    value = value === undefined ? null : decode(value, options);
+    formatter(decode(key, options), value, ret);
+  }
+
+  return Object.keys(ret).sort().reduce(function (result, key) {
+    var value = ret[key];
+
+    if (Boolean(value) && _typeof(value) === 'object' && !Array.isArray(value)) {
+      // Sort object keys, not values
+      result[key] = keysSorter(value);
+    } else {
+      result[key] = value;
+    }
+
+    return result;
+  }, Object.create(null));
+}
+
+exports.extract = extract;
+exports.parse = parse;
+
+exports.stringify = function (obj, options) {
+  if (!obj) {
+    return '';
+  }
+
+  options = Object.assign({
+    encode: true,
+    strict: true,
+    arrayFormat: 'none'
+  }, options);
+  var formatter = encoderForArrayFormat(options);
+  var keys = Object.keys(obj);
+
+  if (options.sort !== false) {
+    keys.sort(options.sort);
+  }
+
+  return keys.map(function (key) {
+    var value = obj[key];
+
+    if (value === undefined) {
+      return '';
+    }
+
+    if (value === null) {
+      return encode(key, options);
+    }
+
+    if (Array.isArray(value)) {
+      var result = [];
+
+      for (var value2 of value.slice()) {
+        if (value2 === undefined) {
+          continue;
+        }
+
+        result.push(formatter(key, value2, result.length));
+      }
+
+      return result.join('&');
+    }
+
+    return encode(key, options) + '=' + encode(value, options);
+  }).filter(function (x) {
+    return x.length > 0;
+  }).join('&');
+};
+
+exports.parseUrl = function (input, options) {
+  var hashStart = input.indexOf('#');
+
+  if (hashStart !== -1) {
+    input = input.slice(0, hashStart);
+  }
+
+  return {
+    url: input.split('?')[0] || '',
+    query: parse(extract(input), options)
+  };
+};
+},{"strict-uri-encode":"../node_modules/strict-uri-encode/index.js","decode-uri-component":"../node_modules/decode-uri-component/index.js"}],"pages/home/movie.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28720,7 +29039,7 @@ function Movie(_ref) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Home;
+exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -28728,15 +29047,32 @@ var _app = require("../../app.js");
 
 var _api = require("../../utils/api");
 
+var _queryString = _interopRequireDefault(require("query-string"));
+
 var _movie = _interopRequireDefault(require("./movie"));
+
+var _reactRouterDom = require("react-router-dom");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function Home() {
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function Home(props) {
   var _React$useContext = _react.default.useContext(_app.MovieContext),
       movieState = _React$useContext.movieState,
       movies = _React$useContext.movies,
       moviesTrending = _React$useContext.moviesTrending;
+
+  var _React$useState = _react.default.useState(1),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      currentPage = _React$useState2[0],
+      setCurrentPage = _React$useState2[1];
 
   var renderMovie = function renderMovie(movies) {
     return movies.length !== 0 ? movies.results.map(function (movie, i) {
@@ -28747,13 +29083,27 @@ function Home() {
     }) : _react.default.createElement("h1", null, "Loading...");
   };
 
+  _react.default.useEffect(function () {
+    var param = props.location.search;
+    console.log('param', _queryString.default.parse(param));
+    console.log(props);
+  });
+
   return _react.default.createElement("div", {
     className: "w-full mt-12"
   }, _react.default.createElement("div", {
     className: "container mx-auto mb-10"
   }, _react.default.createElement("h1", {
     className: "text-center text-5xl"
-  }, "Tokoflix")), _react.default.createElement("div", null, _react.default.createElement("div", {
+  }, "Tokoflix")), _react.default.createElement("button", {
+    onClick: function onClick() {
+      return setCurrentPage(function (prev) {
+        return prev + 1;
+      });
+    }
+  }, _react.default.createElement(_reactRouterDom.Link, {
+    to: "/?page=".concat(currentPage)
+  }, "goto")), _react.default.createElement("div", null, _react.default.createElement("div", {
     className: "container mx-auto"
   }, _react.default.createElement("h1", {
     className: "ml-5 text-green"
@@ -28769,7 +29119,10 @@ function Home() {
     className: "movie-container container mx-auto flex flex-wrap items-center"
   }, renderMovie(moviesTrending))));
 }
-},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js","./movie":"pages/home/movie.js"}],"pages/details/movieDetails.js":[function(require,module,exports) {
+
+var _default = Home;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js","../../app.js":"app.js","../../utils/api":"utils/api.js","query-string":"../node_modules/query-string/index.js","./movie":"pages/home/movie.js","react-router-dom":"../node_modules/react-router-dom/es/index.js"}],"pages/details/movieDetails.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
