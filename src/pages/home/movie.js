@@ -1,14 +1,18 @@
-import React from 'react'
+import React , { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { imgUrl } from '../../utils/api'
 import { TiArrowForward , TiHeartFullOutline } from 'react-icons/ti'
 import { FiHeart , FiShoppingCart } from 'react-icons/fi'
 import { UserContext, MovieContext } from '../../utils/provider';
 import { IoMdCart } from 'react-icons/io'
+import slugify from 'slugify'
 
 const SingleMovieContext = React.createContext('singlemovie')
-
 export default function Movie({details , onAddCart , onDeleteFromCart , onClick}) {
+    React.useEffect(() => {
+      console.log()
+    } , [])
+
    return (
     <SingleMovieContext.Provider
       value={{ 
@@ -28,7 +32,7 @@ export default function Movie({details , onAddCart , onDeleteFromCart , onClick}
               <div className="menu-right flex items-center">  
                 <MovieCart item={details} />
                 <WishList item={details} />
-                <Link to={`details/${details.id}`} className='no-underline text-white font-bold text-xl ml-2'>
+                <Link to={`details/${details.id}-${slugify(details.title , '-')}`} className='no-underline text-white font-bold text-xl ml-2'>
                   <TiArrowForward />
                 </Link>
               </div>
@@ -77,95 +81,101 @@ export default function Movie({details , onAddCart , onDeleteFromCart , onClick}
   )
 }
 
-function WishList({item}) {
-  const context = React.useContext(UserContext)
-  const [toggleWishList , setToggleWishList] = React.useState(false)
-
-
-  function selectWishList() {
-    setToggleWishList(prev => !prev)
-    console.log('details wishlist' , item)
+// props item
+class WishList extends Component {
+  constructor(props) {
+    super(props)
   }
 
-  return (
-    <div className="wishlist text-white" onClick={selectWishList}>
-      { toggleWishList ? <TiHeartFullOutline /> : <FiHeart /> }
-    </div>  
-  )
+  state = {
+    toggleWishList: false 
+  }
+
+  selectWishList = () => {
+    this.setState({ toggleWishList: !this.state.toggleWishList })
+  }
+
+  render() {
+    return (
+      <div className="wishlist text-white" onClick={this.selectWishList}>
+        { this.state.toggleWishList ? <TiHeartFullOutline /> : <FiHeart /> }
+      </div>  
+    )
+  }
 }
 
-function Price({rating}) {
-  const [price , setPrice] = React.useState(0)
+// props rating
+class Price extends Component {
+  constructor(props) {
+    super(props)
+  }
 
-  React.useEffect(() => {
-    let fixRating = parseInt(rating)
+  state = {
+    price: 0
+  }
+
+  componentDidMount() {
+    let fixRating = parseInt(this.props.rating)
 
     if (fixRating > 6) {
       console.log('price high')
     }
 
     if (fixRating == 0 && fixRating <= 3) {
-      setPrice(3500)
+      this.setState({ price: 3500 })
     } else if (fixRating > 3 && fixRating <= 6) {
-      setPrice(8250)
+      this.setState({ price: 8250 })
     } else if (fixRating > 6 && fixRating <= 8) {
-      setPrice(16360)
+      this.setState({ price: 16360 })
     } else if (fixRating > 8 && fixRating <= 10) {
-      setPrice(21250)
+      this.setState({ price: 21250 })
     } else {
       console.warn('price error')
     }
-
-  } , [])
-
-  return (
-    <div className='price-container'>
-      <div className="price text-sm font-bold">{price}</div>
-    </div>
-  )
-}
-
-function MovieCart({item , onAddCart}) {
-  const [toggleCart , setToggleCart] = React.useState(false)
-  const { cart , action } = React.useContext(MovieContext)
-  const { setAddToCart , onDeleteFromCart , onClick } = React.useContext(SingleMovieContext)
-
-  function addToCart() {
-    setToggleCart(prev => !prev)
-    onClick(item)
   }
 
-  React.useEffect(() => {
+  render() {
+    return (
+      <div className='price-container'>
+        <div className="price text-sm font-bold">{this.state.price}</div>
+      </div>
+    )
+  }
+}
 
+// props item onAddCart
+class MovieCart extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  static contextType = MovieContext
+  
+  state = {
+    toggleCart: false
+  }
+
+  addToCart = () => {
+    this.setState({ toggleCart: !this.state.toggleCart })
+  }
+
+  componentDidMount() {
+    const { cart } = this.context 
     for (let i in cart) {
-      // console.log(cart[i].id == item.id)      
-      if (cart[i].id == item.id) {
-        console.log('toggling' , item)
-        setToggleCart(true)
+      if (cart[i].id == this.props.item.id) {
+        this.setState({ toggleCart: true })
       } else {
-        setToggleCart(false)
+        this.setState({ toggleCart: false })
         console.log('delete item')
       }
     }
+  }
 
-
-  } , {cart})
-
-  
-  // React.useEffect(() => {
-  //   if (toggleCart) {
-  //      console.log('click add cart')
-  //     setAddToCart(item)
-  //   } else {
-  //     console.log('click remove cart')
-  //     onDeleteFromCart(item)
-  //   }
-  // } , [toggleCart])
-
-
-  return (
-    <div className='cart-container mr-3 text-white' onClick={addToCart}>
-      {toggleCart ? <IoMdCart /> : <FiShoppingCart />}
-    </div>
-  )
+  render() {
+    return (
+      <div className='cart-container mr-3 text-white' onClick={() => this.addToCart()}>
+        {this.state.toggleCart ? <IoMdCart /> : <FiShoppingCart />}
+      </div>
+    )
+  }
 }

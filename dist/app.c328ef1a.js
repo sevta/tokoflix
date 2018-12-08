@@ -29614,19 +29614,31 @@ Object.defineProperty(exports, "__esModule", {
 exports.Provider = Provider;
 exports.AppContext = exports.MovieContext = exports.UserContext = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _api = require("./api");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var UserContext = _react.default.createContext('UserContext');
 
@@ -29644,181 +29656,208 @@ function Provider(props) {
   return _react.default.createElement(AppContext.Provider, null, _react.default.createElement(UserProvider, null, _react.default.createElement(MovieProvider, null, props.children)));
 }
 
-function MovieProvider(props) {
-  var _React$useState = _react.default.useState([]),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      movies = _React$useState2[0],
-      setMovies = _React$useState2[1];
+var MovieProvider =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(MovieProvider, _Component);
 
-  var _React$useState3 = _react.default.useState([]),
-      _React$useState4 = _slicedToArray(_React$useState3, 2),
-      moviesTrending = _React$useState4[0],
-      setMoviesTrending = _React$useState4[1];
+  function MovieProvider(props) {
+    var _this;
 
-  var _React$useState5 = _react.default.useState(1),
-      _React$useState6 = _slicedToArray(_React$useState5, 2),
-      currentPage = _React$useState6[0],
-      _setCurrentPage = _React$useState6[1];
+    _classCallCheck(this, MovieProvider);
 
-  var _React$useState7 = _react.default.useState(''),
-      _React$useState8 = _slicedToArray(_React$useState7, 2),
-      currentUrl = _React$useState8[0],
-      _setCurrentUrl = _React$useState8[1];
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MovieProvider).call(this, props));
 
-  var _React$useState9 = _react.default.useState(false),
-      _React$useState10 = _slicedToArray(_React$useState9, 2),
-      toggleWishList = _React$useState10[0],
-      setToggleWishList = _React$useState10[1];
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      movies: [],
+      moviesTrending: [],
+      currentPage: 1,
+      currentUrl: '',
+      toggleWishList: false,
+      cart: [],
+      toggleCart: false
+    });
 
-  var _React$useState11 = _react.default.useState([]),
-      _React$useState12 = _slicedToArray(_React$useState11, 2),
-      cart = _React$useState12[0],
-      _addToCart = _React$useState12[1];
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fetchUrl", function (query, page) {
+      var url = "".concat(_api.apiUrl).concat(query, "?api_key=").concat(_api.apikey, "&region=ID&page=").concat(page, "}");
+      console.log(url);
+      return url;
+    });
 
-  var _React$useState13 = _react.default.useState(false),
-      _React$useState14 = _slicedToArray(_React$useState13, 2),
-      toggleCart = _React$useState14[0],
-      _setToggleCart = _React$useState14[1];
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fetchMovies", function (url, callback) {
+      var err = false;
+      fetch(url).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        err = false;
+        callback(err, data);
+      }).catch(function (err) {
+        err = true;
+        callback(err, null);
+      });
+    });
 
-  function fetchUrl(query, page) {
-    var url = "".concat(_api.apiUrl).concat(query, "?api_key=").concat(_api.apikey, "&region=ID&page=").concat(page, "}");
-    console.log(url);
-    return url;
+    return _this;
   }
 
-  _react.default.useEffect(function () {
-    console.log('add to cart', cart); // localStorage.setItem('cart' , JSON.stringify(cart))        
+  _createClass(MovieProvider, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
 
-    console.log(localStorage.getItem('cart'));
-  }, [cart]);
+      var userStorage = localStorage.getItem('user');
 
-  _react.default.useEffect(function () {
-    var userStorage = localStorage.getItem('user');
+      if (userStorage !== null) {
+        var currentCart = JSON.parse(localStorage.getItem('cart')); // addToCart(currentCart)
 
-    if (userStorage !== null) {
-      var currentCart = JSON.parse(localStorage.getItem('cart'));
-
-      _addToCart(currentCart);
-
-      setTimeout(function () {
-        console.log('if user storage not null ', cart);
-        console.log('if user storage not null ', JSON.parse(localStorage.getItem('cart')));
-      }, 300);
-    } else {
-      localStorage.setItem('cart', JSON.stringify([]));
-    } // fetch now playing
-
-
-    fetchMovies(fetchUrl('movie/now_playing', 1), function (err, data) {
-      if (err) throw err;
-      setMovies(data);
-    }); // fetch top rated data
-
-    fetchMovies(fetchUrl('movie/popular', 1), function (err, data) {
-      if (err) throw err;
-      console.log('top rated', data);
-      setMoviesTrending(data);
-    });
-  }, []); // get new data if current page changed
-
-
-  _react.default.useEffect(function () {
-    // fetch top rated data
-    console.log('fetch url', fetchUrl('movie/popular', 20));
-    fetchMovies(fetchUrl('movie/popular', 20), function (err, data) {
-      if (err) {
-        console.log(err);
+        this.setState({
+          cart: currentCart
+        });
+        setTimeout(function () {
+          console.log('if user storage not null ', JSON.parse(localStorage.getItem('cart')));
+        }, 300);
       } else {
-        console.log('top rated', data);
-        setMoviesTrending(data);
+        localStorage.setItem('cart', JSON.stringify([]));
+      } // fetch now playing
+
+
+      this.fetchMovies(this.fetchUrl('movie/now_playing', 1), function (err, data) {
+        if (err) throw err; // setMovies(data) 
+
+        _this2.setState({
+          movies: data
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this3 = this;
+
+      var MoviesProvider = {
+        movies: this.state.movies,
+        moviesTrending: this.state.moviesTrending,
+        currentPage: this.state.currentPage,
+        currentUrl: this.state.currentUrl,
+        cart: this.state.cart,
+        toggleCart: this.state.toggleCart,
+        action: {
+          setMoviesTrending: function setMoviesTrending(payload, callback) {
+            _this3.setState({
+              moviesTrending: payload
+            }, function () {
+              return callback(_this3.state.moviesTrending);
+            });
+          },
+          setCurrentPage: function setCurrentPage(payload, callback) {
+            if (!callback) {
+              _this3.setState({
+                currentPage: payload
+              });
+            } else {
+              _this3.setState({
+                currentPage: payload
+              }, function () {
+                return callback(_this3.state.currentPage);
+              });
+            }
+          },
+          setCurrentUrl: function setCurrentUrl(payload) {
+            return _this3.setState({
+              currentUrl: payload
+            });
+          },
+          addToCart: function addToCart(payload) {
+            return _this3.setState({
+              cart: payload
+            });
+          },
+          setToggleCart: function setToggleCart(payload) {
+            return _this3.setState({
+              toggleCart: payload
+            });
+          }
+        }
+      };
+      return _react.default.createElement(MovieContext.Provider, {
+        value: MoviesProvider
+      }, this.props.children);
+    }
+  }]);
+
+  return MovieProvider;
+}(_react.Component);
+
+var UserProvider =
+/*#__PURE__*/
+function (_Component2) {
+  _inherits(UserProvider, _Component2);
+
+  function UserProvider(props) {
+    var _this4;
+
+    _classCallCheck(this, UserProvider);
+
+    _this4 = _possibleConstructorReturn(this, _getPrototypeOf(UserProvider).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this4)), "state", {
+      isNewUser: false,
+      userState: {
+        username: '',
+        wishlist: []
       }
     });
-    console.log('current page change', currentPage);
-  }, [currentPage]);
 
-  var fetchMovies = function fetchMovies(url, callback) {
-    var err = false;
-    fetch(url).then(function (res) {
-      return res.json();
-    }).then(function (data) {
-      err = false;
-      callback(err, data);
-    }).catch(function (err) {
-      err = true;
-      callback(err, null);
-    });
-  };
+    return _this4;
+  }
 
-  var MoviesProvider = {
-    movies: movies,
-    moviesTrending: moviesTrending,
-    currentPage: currentPage,
-    currentUrl: currentUrl,
-    cart: cart,
-    toggleCart: toggleCart,
-    action: {
-      setCurrentPage: function setCurrentPage(payload) {
-        return _setCurrentPage(payload);
-      },
-      setCurrentUrl: function setCurrentUrl(payload) {
-        return _setCurrentUrl(payload);
-      },
-      addToCart: function addToCart(payload) {
-        return _addToCart(payload);
-      },
-      setToggleCart: function setToggleCart(payload) {
-        return _setToggleCart(payload);
+  _createClass(UserProvider, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var userStorage = localStorage.getItem('user');
+
+      if (userStorage == null) {
+        // setIsNewUser(true)
+        this.setState({
+          isNewUser: true
+        });
+      } else {
+        console.log('current user', userStorage); // setUser(JSON.parse(userStorage))
+
+        this.setState({
+          userState: JSON.parse(userStorage)
+        });
       }
     }
-  };
-  return _react.default.createElement(MovieContext.Provider, {
-    value: MoviesProvider
-  }, props.children);
-}
+  }, {
+    key: "render",
+    value: function render() {
+      var _this5 = this;
 
-function UserProvider(props) {
-  // user state
-  var _React$useState15 = _react.default.useState(false),
-      _React$useState16 = _slicedToArray(_React$useState15, 2),
-      isNewUser = _React$useState16[0],
-      _setIsNewUser = _React$useState16[1];
-
-  var _React$useState17 = _react.default.useState({
-    username: '',
-    wishlist: []
-  }),
-      _React$useState18 = _slicedToArray(_React$useState17, 2),
-      userState = _React$useState18[0],
-      _setUser = _React$useState18[1];
-
-  _react.default.useEffect(function () {
-    var userStorage = localStorage.getItem('user');
-
-    if (userStorage == null) {
-      _setIsNewUser(true);
-    } else {
-      console.log('current user', userStorage);
-
-      _setUser(JSON.parse(userStorage));
+      var usersProvider = {
+        isNewUser: this.state.isNewUser,
+        userState: this.state.userState,
+        action: {
+          setUser: function setUser(payload) {
+            return _this5.setState({
+              userState: payload
+            });
+          },
+          setIsNewUser: function setIsNewUser(payload) {
+            return _this5.setState({
+              isNewUser: payload
+            });
+          }
+        }
+      };
+      return _react.default.createElement(UserContext.Provider, {
+        value: usersProvider
+      }, this.props.children);
     }
-  }, []);
+  }]);
 
-  var usersProvider = {
-    isNewUser: isNewUser,
-    userState: userState,
-    action: {
-      setUser: function setUser(payload) {
-        return _setUser(payload);
-      },
-      setIsNewUser: function setIsNewUser(payload) {
-        return _setIsNewUser(payload);
-      }
-    }
-  };
-  return _react.default.createElement(UserContext.Provider, {
-    value: usersProvider
-  }, props.children);
-}
+  return UserProvider;
+}(_react.Component);
 },{"react":"../node_modules/react/index.js","./api":"utils/api.js"}],"../node_modules/strict-uri-encode/index.js":[function(require,module,exports) {
 'use strict';
 
@@ -36702,7 +36741,54 @@ module.exports.IoMdWoman = function (props) {
 module.exports.IoMdWoman.displayName = "IoMdWoman"
         ;
 
-},{"../lib/iconBase":"../node_modules/react-icons/lib/iconBase.js"}],"pages/home/movie.js":[function(require,module,exports) {
+},{"../lib/iconBase":"../node_modules/react-icons/lib/iconBase.js"}],"../node_modules/slugify/index.js":[function(require,module,exports) {
+var define;
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function (obj) { return typeof obj; }; } else { _typeof = function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+;
+
+(function (name, root, factory) {
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object') {
+    module.exports = factory();
+    module.exports['default'] = factory();
+  }
+  /* istanbul ignore next */
+  else if (typeof define === 'function' && define.amd) {
+      define(factory);
+    } else {
+      root[name] = factory();
+    }
+})('slugify', this, function () {
+  /* eslint-disable */
+  var charMap = JSON.parse('{"$":"dollar","%":"percent","&":"and","<":"less",">":"greater","|":"or","¢":"cent","£":"pound","¤":"currency","¥":"yen","©":"(c)","ª":"a","®":"(r)","º":"o","À":"A","Á":"A","Â":"A","Ã":"A","Ä":"A","Å":"A","Æ":"AE","Ç":"C","È":"E","É":"E","Ê":"E","Ë":"E","Ì":"I","Í":"I","Î":"I","Ï":"I","Ð":"D","Ñ":"N","Ò":"O","Ó":"O","Ô":"O","Õ":"O","Ö":"O","Ø":"O","Ù":"U","Ú":"U","Û":"U","Ü":"U","Ý":"Y","Þ":"TH","ß":"ss","à":"a","á":"a","â":"a","ã":"a","ä":"a","å":"a","æ":"ae","ç":"c","è":"e","é":"e","ê":"e","ë":"e","ì":"i","í":"i","î":"i","ï":"i","ð":"d","ñ":"n","ò":"o","ó":"o","ô":"o","õ":"o","ö":"o","ø":"o","ù":"u","ú":"u","û":"u","ü":"u","ý":"y","þ":"th","ÿ":"y","Ā":"A","ā":"a","Ă":"A","ă":"a","Ą":"A","ą":"a","Ć":"C","ć":"c","Č":"C","č":"c","Ď":"D","ď":"d","Đ":"DJ","đ":"dj","Ē":"E","ē":"e","Ė":"E","ė":"e","Ę":"e","ę":"e","Ě":"E","ě":"e","Ğ":"G","ğ":"g","Ģ":"G","ģ":"g","Ĩ":"I","ĩ":"i","Ī":"i","ī":"i","Į":"I","į":"i","İ":"I","ı":"i","Ķ":"k","ķ":"k","Ļ":"L","ļ":"l","Ľ":"L","ľ":"l","Ł":"L","ł":"l","Ń":"N","ń":"n","Ņ":"N","ņ":"n","Ň":"N","ň":"n","Ő":"O","ő":"o","Œ":"OE","œ":"oe","Ŕ":"R","ŕ":"r","Ř":"R","ř":"r","Ś":"S","ś":"s","Ş":"S","ş":"s","Š":"S","š":"s","Ţ":"T","ţ":"t","Ť":"T","ť":"t","Ũ":"U","ũ":"u","Ū":"u","ū":"u","Ů":"U","ů":"u","Ű":"U","ű":"u","Ų":"U","ų":"u","Ź":"Z","ź":"z","Ż":"Z","ż":"z","Ž":"Z","ž":"z","ƒ":"f","Ơ":"O","ơ":"o","Ư":"U","ư":"u","ǈ":"LJ","ǉ":"lj","ǋ":"NJ","ǌ":"nj","Ș":"S","ș":"s","Ț":"T","ț":"t","˚":"o","Ά":"A","Έ":"E","Ή":"H","Ί":"I","Ό":"O","Ύ":"Y","Ώ":"W","ΐ":"i","Α":"A","Β":"B","Γ":"G","Δ":"D","Ε":"E","Ζ":"Z","Η":"H","Θ":"8","Ι":"I","Κ":"K","Λ":"L","Μ":"M","Ν":"N","Ξ":"3","Ο":"O","Π":"P","Ρ":"R","Σ":"S","Τ":"T","Υ":"Y","Φ":"F","Χ":"X","Ψ":"PS","Ω":"W","Ϊ":"I","Ϋ":"Y","ά":"a","έ":"e","ή":"h","ί":"i","ΰ":"y","α":"a","β":"b","γ":"g","δ":"d","ε":"e","ζ":"z","η":"h","θ":"8","ι":"i","κ":"k","λ":"l","μ":"m","ν":"n","ξ":"3","ο":"o","π":"p","ρ":"r","ς":"s","σ":"s","τ":"t","υ":"y","φ":"f","χ":"x","ψ":"ps","ω":"w","ϊ":"i","ϋ":"y","ό":"o","ύ":"y","ώ":"w","Ё":"Yo","Ђ":"DJ","Є":"Ye","І":"I","Ї":"Yi","Ј":"J","Љ":"LJ","Њ":"NJ","Ћ":"C","Џ":"DZ","А":"A","Б":"B","В":"V","Г":"G","Д":"D","Е":"E","Ж":"Zh","З":"Z","И":"I","Й":"J","К":"K","Л":"L","М":"M","Н":"N","О":"O","П":"P","Р":"R","С":"S","Т":"T","У":"U","Ф":"F","Х":"H","Ц":"C","Ч":"Ch","Ш":"Sh","Щ":"Sh","Ъ":"U","Ы":"Y","Ь":"","Э":"E","Ю":"Yu","Я":"Ya","а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ж":"zh","з":"z","и":"i","й":"j","к":"k","л":"l","м":"m","н":"n","о":"o","п":"p","р":"r","с":"s","т":"t","у":"u","ф":"f","х":"h","ц":"c","ч":"ch","ш":"sh","щ":"sh","ъ":"u","ы":"y","ь":"","э":"e","ю":"yu","я":"ya","ё":"yo","ђ":"dj","є":"ye","і":"i","ї":"yi","ј":"j","љ":"lj","њ":"nj","ћ":"c","џ":"dz","Ґ":"G","ґ":"g","฿":"baht","ა":"a","ბ":"b","გ":"g","დ":"d","ე":"e","ვ":"v","ზ":"z","თ":"t","ი":"i","კ":"k","ლ":"l","მ":"m","ნ":"n","ო":"o","პ":"p","ჟ":"zh","რ":"r","ს":"s","ტ":"t","უ":"u","ფ":"f","ქ":"k","ღ":"gh","ყ":"q","შ":"sh","ჩ":"ch","ც":"ts","ძ":"dz","წ":"ts","ჭ":"ch","ხ":"kh","ჯ":"j","ჰ":"h","ẞ":"SS","Ạ":"A","ạ":"a","Ả":"A","ả":"a","Ấ":"A","ấ":"a","Ầ":"A","ầ":"a","Ẩ":"A","ẩ":"a","Ẫ":"A","ẫ":"a","Ậ":"A","ậ":"a","Ắ":"A","ắ":"a","Ằ":"A","ằ":"a","Ẳ":"A","ẳ":"a","Ẵ":"A","ẵ":"a","Ặ":"A","ặ":"a","Ẹ":"E","ẹ":"e","Ẻ":"E","ẻ":"e","Ẽ":"E","ẽ":"e","Ế":"E","ế":"e","Ề":"E","ề":"e","Ể":"E","ể":"e","Ễ":"E","ễ":"e","Ệ":"E","ệ":"e","Ỉ":"I","ỉ":"i","Ị":"I","ị":"i","Ọ":"O","ọ":"o","Ỏ":"O","ỏ":"o","Ố":"O","ố":"o","Ồ":"O","ồ":"o","Ổ":"O","ổ":"o","Ỗ":"O","ỗ":"o","Ộ":"O","ộ":"o","Ớ":"O","ớ":"o","Ờ":"O","ờ":"o","Ở":"O","ở":"o","Ỡ":"O","ỡ":"o","Ợ":"O","ợ":"o","Ụ":"U","ụ":"u","Ủ":"U","ủ":"u","Ứ":"U","ứ":"u","Ừ":"U","ừ":"u","Ử":"U","ử":"u","Ữ":"U","ữ":"u","Ự":"U","ự":"u","Ỳ":"Y","ỳ":"y","Ỵ":"Y","ỵ":"y","Ỷ":"Y","ỷ":"y","Ỹ":"Y","ỹ":"y","‘":"\'","’":"\'","“":"\\\"","”":"\\\"","†":"+","•":"*","…":"...","₠":"ecu","₢":"cruzeiro","₣":"french franc","₤":"lira","₥":"mill","₦":"naira","₧":"peseta","₨":"rupee","₩":"won","₪":"new shequel","₫":"dong","€":"euro","₭":"kip","₮":"tugrik","₯":"drachma","₰":"penny","₱":"peso","₲":"guarani","₳":"austral","₴":"hryvnia","₵":"cedi","₹":"indian rupee","₽":"russian ruble","₿":"bitcoin","℠":"sm","™":"tm","∂":"d","∆":"delta","∑":"sum","∞":"infinity","♥":"love","元":"yuan","円":"yen","﷼":"rial"}');
+  /* eslint-enable */
+
+  function replace(string, options) {
+    if (typeof string !== 'string') {
+      throw new Error('slugify: string argument expected');
+    }
+
+    options = typeof options === 'string' ? {
+      replacement: options
+    } : options || {};
+    var slug = string.split('').reduce(function (result, ch) {
+      return result + (charMap[ch] || ch). // allowed
+      replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]/g, '');
+    }, '') // trim leading/trailing spaces
+    .trim() // convert spaces
+    .replace(/[-\s]+/g, options.replacement || '-');
+    return options.lower ? slug.toLowerCase() : slug;
+  }
+
+  replace.extend = function (customMap) {
+    for (var key in customMap) {
+      charMap[key] = customMap[key];
+    }
+  };
+
+  return replace;
+});
+},{}],"pages/home/movie.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36712,7 +36798,7 @@ exports.default = Movie;
 
 var _style = _interopRequireDefault(require("styled-jsx/style"));
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _reactRouterDom = require("react-router-dom");
 
@@ -36726,15 +36812,31 @@ var _provider = require("../../utils/provider");
 
 var _io = require("react-icons/io");
 
+var _slugify = _interopRequireDefault(require("slugify"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var SingleMovieContext = _react.default.createContext('singlemovie');
 
@@ -36743,6 +36845,11 @@ function Movie(_ref) {
       onAddCart = _ref.onAddCart,
       _onDeleteFromCart = _ref.onDeleteFromCart,
       _onClick = _ref.onClick;
+
+  _react.default.useEffect(function () {
+    console.log();
+  }, []);
+
   return _react.default.createElement(SingleMovieContext.Provider, {
     value: {
       setAddToCart: function setAddToCart(payload) {
@@ -36778,7 +36885,7 @@ function Movie(_ref) {
   }), _react.default.createElement(WishList, {
     item: details
   }), _react.default.createElement(_reactRouterDom.Link, {
-    to: "details/".concat(details.id),
+    to: "details/".concat(details.id, "-").concat((0, _slugify.default)(details.title, '-')),
     className: "no-underline text-white font-bold text-xl ml-2"
   }, _react.default.createElement(_ti.TiArrowForward, null)))))), _react.default.createElement("h5", {
     className: "jsx-621068964" + " " + 'rating bg-teal font-bold text-white z-20'
@@ -36790,121 +36897,173 @@ function Movie(_ref) {
     styleId: "621068964",
     css: ".overlay.jsx-621068964{-webkit-transition:all .3s ease;transition:all .3s ease;opacity:0;background:rgba(77,192,181,0.9);z-index:-1;}.date-font.jsx-621068964{font-size:13px;}.movie-details.jsx-621068964{-webkit-transition:all .4s ease;transition:all .4s ease;}.movie-details.jsx-621068964:hover{-webkit-transform:translateY(-10px);-ms-transform:translateY(-10px);transform:translateY(-10px);}.movie-details.jsx-621068964:hover .overlay.jsx-621068964{opacity:1;z-index:3;}.rating.jsx-621068964{width:30px;height:30px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;position:absolute;top:-10px;right:-10px;border-radius:50%;}"
   })));
-}
+} // props item
 
-function WishList(_ref2) {
-  var item = _ref2.item;
 
-  var context = _react.default.useContext(_provider.UserContext);
+var WishList =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(WishList, _Component);
 
-  var _React$useState = _react.default.useState(false),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      toggleWishList = _React$useState2[0],
-      setToggleWishList = _React$useState2[1];
+  function WishList(props) {
+    var _this;
 
-  function selectWishList() {
-    setToggleWishList(function (prev) {
-      return !prev;
+    _classCallCheck(this, WishList);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(WishList).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      toggleWishList: false
     });
-    console.log('details wishlist', item);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectWishList", function () {
+      _this.setState({
+        toggleWishList: !_this.state.toggleWishList
+      });
+    });
+
+    return _this;
   }
 
-  return _react.default.createElement("div", {
-    className: "wishlist text-white",
-    onClick: selectWishList
-  }, toggleWishList ? _react.default.createElement(_ti.TiHeartFullOutline, null) : _react.default.createElement(_fi.FiHeart, null));
-}
-
-function Price(_ref3) {
-  var rating = _ref3.rating;
-
-  var _React$useState3 = _react.default.useState(0),
-      _React$useState4 = _slicedToArray(_React$useState3, 2),
-      price = _React$useState4[0],
-      setPrice = _React$useState4[1];
-
-  _react.default.useEffect(function () {
-    var fixRating = parseInt(rating);
-
-    if (fixRating > 6) {
-      console.log('price high');
+  _createClass(WishList, [{
+    key: "render",
+    value: function render() {
+      return _react.default.createElement("div", {
+        className: "wishlist text-white",
+        onClick: this.selectWishList
+      }, this.state.toggleWishList ? _react.default.createElement(_ti.TiHeartFullOutline, null) : _react.default.createElement(_fi.FiHeart, null));
     }
+  }]);
 
-    if (fixRating == 0 && fixRating <= 3) {
-      setPrice(3500);
-    } else if (fixRating > 3 && fixRating <= 6) {
-      setPrice(8250);
-    } else if (fixRating > 6 && fixRating <= 8) {
-      setPrice(16360);
-    } else if (fixRating > 8 && fixRating <= 10) {
-      setPrice(21250);
-    } else {
-      console.warn('price error');
-    }
-  }, []);
+  return WishList;
+}(_react.Component); // props rating
 
-  return _react.default.createElement("div", {
-    className: "price-container"
-  }, _react.default.createElement("div", {
-    className: "price text-sm font-bold"
-  }, price));
-}
 
-function MovieCart(_ref4) {
-  var item = _ref4.item,
-      onAddCart = _ref4.onAddCart;
+var Price =
+/*#__PURE__*/
+function (_Component2) {
+  _inherits(Price, _Component2);
 
-  var _React$useState5 = _react.default.useState(false),
-      _React$useState6 = _slicedToArray(_React$useState5, 2),
-      toggleCart = _React$useState6[0],
-      setToggleCart = _React$useState6[1];
+  function Price(props) {
+    var _this2;
 
-  var _React$useContext = _react.default.useContext(_provider.MovieContext),
-      cart = _React$useContext.cart,
-      action = _React$useContext.action;
+    _classCallCheck(this, Price);
 
-  var _React$useContext2 = _react.default.useContext(SingleMovieContext),
-      setAddToCart = _React$useContext2.setAddToCart,
-      onDeleteFromCart = _React$useContext2.onDeleteFromCart,
-      onClick = _React$useContext2.onClick;
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(Price).call(this, props));
 
-  function addToCart() {
-    setToggleCart(function (prev) {
-      return !prev;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
+      price: 0
     });
-    onClick(item);
+
+    return _this2;
   }
 
-  _react.default.useEffect(function () {
-    for (var i in cart) {
-      // console.log(cart[i].id == item.id)      
-      if (cart[i].id == item.id) {
-        console.log('toggling', item);
-        setToggleCart(true);
+  _createClass(Price, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var fixRating = parseInt(this.props.rating);
+
+      if (fixRating > 6) {
+        console.log('price high');
+      }
+
+      if (fixRating == 0 && fixRating <= 3) {
+        this.setState({
+          price: 3500
+        });
+      } else if (fixRating > 3 && fixRating <= 6) {
+        this.setState({
+          price: 8250
+        });
+      } else if (fixRating > 6 && fixRating <= 8) {
+        this.setState({
+          price: 16360
+        });
+      } else if (fixRating > 8 && fixRating <= 10) {
+        this.setState({
+          price: 21250
+        });
       } else {
-        setToggleCart(false);
-        console.log('delete item');
+        console.warn('price error');
       }
     }
   }, {
-    cart: cart
-  }); // React.useEffect(() => {
-  //   if (toggleCart) {
-  //      console.log('click add cart')
-  //     setAddToCart(item)
-  //   } else {
-  //     console.log('click remove cart')
-  //     onDeleteFromCart(item)
-  //   }
-  // } , [toggleCart])
+    key: "render",
+    value: function render() {
+      return _react.default.createElement("div", {
+        className: "price-container"
+      }, _react.default.createElement("div", {
+        className: "price text-sm font-bold"
+      }, this.state.price));
+    }
+  }]);
+
+  return Price;
+}(_react.Component); // props item onAddCart
 
 
-  return _react.default.createElement("div", {
-    className: "cart-container mr-3 text-white",
-    onClick: addToCart
-  }, toggleCart ? _react.default.createElement(_io.IoMdCart, null) : _react.default.createElement(_fi.FiShoppingCart, null));
-}
-},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","../../utils/api":"utils/api.js","react-icons/ti":"../node_modules/react-icons/ti/index.js","react-icons/fi":"../node_modules/react-icons/fi/index.js","../../utils/provider":"utils/provider.js","react-icons/io":"../node_modules/react-icons/io/index.js"}],"../node_modules/react-js-pagination/node_modules/react/cjs/react.development.js":[function(require,module,exports) {
+var MovieCart =
+/*#__PURE__*/
+function (_Component3) {
+  _inherits(MovieCart, _Component3);
+
+  function MovieCart(props) {
+    var _this3;
+
+    _classCallCheck(this, MovieCart);
+
+    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(MovieCart).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "state", {
+      toggleCart: false
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "addToCart", function () {
+      _this3.setState({
+        toggleCart: !_this3.state.toggleCart
+      });
+    });
+
+    return _this3;
+  }
+
+  _createClass(MovieCart, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var cart = this.context.cart;
+
+      for (var i in cart) {
+        if (cart[i].id == this.props.item.id) {
+          this.setState({
+            toggleCart: true
+          });
+        } else {
+          this.setState({
+            toggleCart: false
+          });
+          console.log('delete item');
+        }
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this4 = this;
+
+      return _react.default.createElement("div", {
+        className: "cart-container mr-3 text-white",
+        onClick: function onClick() {
+          return _this4.addToCart();
+        }
+      }, this.state.toggleCart ? _react.default.createElement(_io.IoMdCart, null) : _react.default.createElement(_fi.FiShoppingCart, null));
+    }
+  }]);
+
+  return MovieCart;
+}(_react.Component);
+
+_defineProperty(MovieCart, "contextType", _provider.MovieContext);
+},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","../../utils/api":"utils/api.js","react-icons/ti":"../node_modules/react-icons/ti/index.js","react-icons/fi":"../node_modules/react-icons/fi/index.js","../../utils/provider":"utils/provider.js","react-icons/io":"../node_modules/react-icons/io/index.js","slugify":"../node_modules/slugify/index.js"}],"../node_modules/react-js-pagination/node_modules/react/cjs/react.development.js":[function(require,module,exports) {
 /** @license React v16.6.1
  * react.development.js
  *
@@ -38953,7 +39112,9 @@ function Banner() {
     css: ".banner-home.jsx-771320590{height:450px;}"
   }));
 }
-},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js"}],"pages/home/home.js":[function(require,module,exports) {
+},{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js"}],"pages/home/pagination.css":[function(require,module,exports) {
+
+},{}],"pages/home/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38961,7 +39122,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _provider = require("../../utils/provider");
 
@@ -38977,7 +39138,13 @@ var _reactJsPagination = _interopRequireDefault(require("react-js-pagination"));
 
 var _banner = _interopRequireDefault(require("./banner"));
 
+require("./pagination.css");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -38987,147 +39154,229 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var menu = ['Now Playing', 'Trending', 'Search'];
 
-function Home(props) {
-  // movie context
-  var _React$useContext = _react.default.useContext(_provider.MovieContext),
-      movieState = _React$useContext.movieState,
-      movies = _React$useContext.movies,
-      moviesTrending = _React$useContext.moviesTrending,
-      currentPage = _React$useContext.currentPage,
-      action = _React$useContext.action,
-      cart = _React$useContext.cart,
-      setCurrentUrl = _React$useContext.setCurrentUrl;
+var Home =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(Home, _Component);
 
-  var _React$useState = _react.default.useState(''),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      menuSelect = _React$useState2[0],
-      setMenuSelect = _React$useState2[1];
+  function Home(props) {
+    var _this;
 
-  function onCartClick(item) {
-    console.log('oncart click', item);
+    _classCallCheck(this, Home);
 
-    if (cart.includes(item)) {
-      console.log('delete');
-      var indexToDelete = cart.indexOf(item);
-      cart.splice(indexToDelete, 1);
-      action.addToCart(_toConsumableArray(cart));
-      localStorage.setItem('cart', JSON.stringify(cart));
-    } else {
-      action.addToCart(_toConsumableArray(cart).concat([item]));
-      localStorage.setItem('cart', JSON.stringify(cart));
-      console.log('add');
-    }
-  }
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Home).call(this, props));
 
-  _react.default.useEffect(function () {
-    console.log('cart now', cart);
-  }, [cart]); // render per movie
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      menuSelect: '',
+      loading: false
+    });
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onCartClick", function (item) {
+      var _this$context = _this.context,
+          cart = _this$context.cart,
+          action = _this$context.action;
 
-  var renderMovie = function renderMovie(movies) {
-    return movies.length !== 0 ? movies.results.map(function (movie, i) {
-      return _react.default.createElement(_movie.default, {
-        key: i,
-        details: movie,
-        onClick: onCartClick
-      });
-    }) : _react.default.createElement("h1", null, "Loading...");
-  };
-
-  _react.default.useEffect(function () {
-    action.setCurrentUrl('/');
-  }, []); // handlechange per page
-
-
-  function handlePageChange(pageNumber) {
-    action.setCurrentPage(pageNumber);
-  }
-
-  function onMenuSelected(menu) {
-    console.log('menu selecte', menu);
-  } // set current page if state current page changed
-
-
-  _react.default.useEffect(function () {
-    console.log('page change', currentPage);
-
-    if (currentPage == 1) {
-      props.history.push("/");
-    } else {
-      props.history.push("/?page=".concat(currentPage));
-    }
-  }, [currentPage]);
-
-  return _react.default.createElement("div", {
-    className: "w-full"
-  }, _react.default.createElement(_banner.default, null), _react.default.createElement(Menu, {
-    onMenuSelected: onMenuSelected
-  }), _react.default.createElement("div", null, _react.default.createElement("div", {
-    className: "container mx-auto"
-  }, _react.default.createElement("h1", {
-    className: "ml-5 mb-3 font-sans font-normal text-green"
-  }, "Now playing")), _react.default.createElement("div", {
-    className: "movie-container container mx-auto flex flex-wrap items-center"
-  }, renderMovie(movies))), _react.default.createElement("div", {
-    className: "mt-10"
-  }, _react.default.createElement("div", {
-    className: "container mx-auto"
-  }, _react.default.createElement("h1", {
-    className: "ml-5 mb-3 font-sans font-normal text-green"
-  }, "Trending")), _react.default.createElement("div", {
-    className: "movie-container container mx-auto flex flex-wrap items-center"
-  }, renderMovie(moviesTrending))), _react.default.createElement(_reactJsPagination.default, {
-    activePage: currentPage,
-    itemsCountPerPage: 2,
-    totalItemsCount: 20,
-    pageRangDisplayed: 5,
-    onChange: handlePageChange
-  }));
-}
-
-function Menu(_ref) {
-  var onMenuSelected = _ref.onMenuSelected;
-
-  var _React$useState3 = _react.default.useState(''),
-      _React$useState4 = _slicedToArray(_React$useState3, 2),
-      menuSelected = _React$useState4[0],
-      setMenuSelected = _React$useState4[1];
-
-  function onMenuSelect(menu) {
-    // setMenuSelected(menu)
-    setMenuSelected(menu);
-    console.log(menu);
-  }
-
-  _react.default.useEffect(function () {
-    onMenuSelected(menuSelected);
-  }, [menuSelected]);
-
-  return _react.default.createElement("div", {
-    className: "container mx-auto flex justify-center"
-  }, menu.map(function (menu, i) {
-    return _react.default.createElement("div", {
-      className: "menu-list mr-5 text-md text-grey cursor-pointer",
-      onClick: function onClick() {
-        return onMenuSelect(menu);
+      if (cart.includes(item)) {
+        // console.log('delete')
+        var indexToDelete = cart.indexOf(item);
+        cart.splice(indexToDelete, 1);
+        action.addToCart(_toConsumableArray(cart));
+        localStorage.setItem('cart', JSON.stringify(cart));
+      } else {
+        action.addToCart(_toConsumableArray(cart).concat([item]));
+        localStorage.setItem('cart', JSON.stringify(cart)); // console.log('add')
       }
-    }, menu);
-  }));
-}
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "renderMovie", function (movies) {
+      return movies.length !== 0 ? movies.results.map(function (movie, i) {
+        return _react.default.createElement(_movie.default, {
+          key: i,
+          details: movie,
+          onClick: _this.onCartClick
+        });
+      }) : _react.default.createElement("h1", null, "Loading...");
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateMovies", function (currentPage) {
+      var action = _this.context.action;
+      fetch((0, _api.fetchUrl)(_api.apikey, 'movie/popular', "&region=ID&page=".concat(currentPage))).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        action.setMoviesTrending(data, function (moviesTrending) {
+          console.log('success updated data', moviesTrending);
+
+          if (currentPage == 1) {
+            _this.props.history.push("/");
+
+            _this.setState({
+              loading: false
+            });
+          } else {
+            _this.props.history.push("/?page=".concat(currentPage));
+
+            _this.setState({
+              loading: false
+            });
+          }
+        });
+      }).catch(function (err) {
+        return console.error(err);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handlePageChange", function (pageNumber) {
+      var action = _this.context.action;
+      action.setCurrentPage(pageNumber, function (currentPage) {
+        _this.setState({
+          loading: true
+        });
+
+        _this.updateMovies(currentPage);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onMenuSelected", function (menu) {
+      console.log('menu selecte', menu);
+    });
+
+    return _this;
+  }
+
+  _createClass(Home, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var action = this.context.action;
+
+      var currentUrl = _queryString.default.parse(this.props.location.search);
+
+      console.log('home url', currentUrl.page);
+
+      if (currentUrl.page !== null) {
+        action.setCurrentUrl("/".concat(currentUrl.page));
+        this.updateMovies(currentUrl.page);
+      } else {
+        action.setCurrentUrl("/");
+        this.updateMovies(1);
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this$context2 = this.context,
+          movieState = _this$context2.movieState,
+          movies = _this$context2.movies,
+          moviesTrending = _this$context2.moviesTrending,
+          currentPage = _this$context2.currentPage,
+          action = _this$context2.action,
+          cart = _this$context2.cart,
+          setCurrentUrl = _this$context2.setCurrentUrl;
+      return _react.default.createElement("div", {
+        className: "w-full"
+      }, _react.default.createElement(_banner.default, null), _react.default.createElement(Menu, {
+        onMenuSelected: this.onMenuSelected
+      }), this.state.loading ? _react.default.createElement("h1", null, "loading...") : _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("div", null, _react.default.createElement("div", {
+        className: "container mx-auto"
+      }, _react.default.createElement("h1", {
+        className: "ml-5 mb-3 font-sans font-normal text-green"
+      }, "Now playing")), _react.default.createElement("div", {
+        className: "movie-container container mx-auto flex flex-wrap items-center"
+      }, this.renderMovie(movies))), _react.default.createElement("div", {
+        className: "mt-10"
+      }, _react.default.createElement("div", {
+        className: "container mx-auto"
+      }, _react.default.createElement("h1", {
+        className: "ml-5 mb-3 font-sans font-normal text-green"
+      }, "Trending")), _react.default.createElement("div", {
+        className: "movie-container container mx-auto flex flex-wrap items-center"
+      }, this.renderMovie(moviesTrending)))), _react.default.createElement(_reactJsPagination.default, {
+        activePage: currentPage,
+        itemsCountPerPage: 2,
+        totalItemsCount: 20,
+        pageRangDisplayed: 5,
+        onChange: this.handlePageChange
+      }));
+    }
+  }]);
+
+  return Home;
+}(_react.Component);
+
+_defineProperty(Home, "contextType", _provider.MovieContext);
+
+var Menu =
+/*#__PURE__*/
+function (_Component2) {
+  _inherits(Menu, _Component2);
+
+  function Menu(props) {
+    var _this2;
+
+    _classCallCheck(this, Menu);
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(Menu).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "state", {
+      menuSelected: ''
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "onMenuSelect", function (menu) {
+      _this2.setState({
+        menuSelected: menu
+      }, function () {
+        _this2.props.onMenuSelected(menu);
+      });
+
+      console.log(menu);
+    });
+
+    return _this2;
+  }
+
+  _createClass(Menu, [{
+    key: "render",
+    value: function render() {
+      var _this3 = this;
+
+      return _react.default.createElement("div", {
+        className: "container mx-auto flex justify-center"
+      }, menu.map(function (menu, i) {
+        return _react.default.createElement("div", {
+          className: "menu-list mr-5 text-md text-grey cursor-pointer",
+          onClick: function onClick() {
+            return _this3.onMenuSelect(menu);
+          }
+        }, menu);
+      }));
+    }
+  }]);
+
+  return Menu;
+}(_react.Component);
 
 var _default = Home;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","../../utils/provider":"utils/provider.js","../../utils/api":"utils/api.js","query-string":"../node_modules/query-string/index.js","./movie":"pages/home/movie.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","react-js-pagination":"../node_modules/react-js-pagination/dist/Pagination.js","./banner":"pages/home/banner.js"}],"pages/details/backdrop.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../utils/provider":"utils/provider.js","../../utils/api":"utils/api.js","query-string":"../node_modules/query-string/index.js","./movie":"pages/home/movie.js","react-router-dom":"../node_modules/react-router-dom/es/index.js","react-js-pagination":"../node_modules/react-js-pagination/dist/Pagination.js","./banner":"pages/home/banner.js","./pagination.css":"pages/home/pagination.css"}],"pages/details/backdrop.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39170,11 +39419,11 @@ function BackDrop(_ref) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = MovieDetailsPage;
+exports.default = void 0;
 
 var _style = _interopRequireDefault(require("styled-jsx/style"));
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _api = require("../../utils/api");
 
@@ -39182,94 +39431,143 @@ var _backdrop = _interopRequireDefault(require("./backdrop"));
 
 var _provider = require("../../utils/provider");
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function MovieDetailsPage(_ref) {
-  var match = _ref.match;
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-  var context = _react.default.useContext(_provider.MovieContext);
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-  var _React$useState = _react.default.useState(''),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      movieID = _React$useState2[0],
-      setMovieID = _React$useState2[1];
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-  var _React$useState3 = _react.default.useState([]),
-      _React$useState4 = _slicedToArray(_React$useState3, 2),
-      movieDetails = _React$useState4[0],
-      setMovieDetails = _React$useState4[1];
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-  var _React$useState5 = _react.default.useState(true),
-      _React$useState6 = _slicedToArray(_React$useState5, 2),
-      loading = _React$useState6[0],
-      setLoading = _React$useState6[1];
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-  _react.default.useEffect(function () {
-    var mID = match.params.movieId;
-    var url = (0, _api.fetchUrl)(_api.apikey, "movie/".concat(mID));
-    context.action.setCurrentUrl(match.path);
-    fetch(url).then(function (res) {
-      return res.json();
-    }).then(function (data) {
-      return setMovieDetails(data);
-    }).catch(function (err) {
-      return console.error(err);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+// props match
+var MovieDetailsPage =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(MovieDetailsPage, _Component);
+
+  function MovieDetailsPage(props) {
+    var _this;
+
+    _classCallCheck(this, MovieDetailsPage);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MovieDetailsPage).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+      movieID: '',
+      movieDetails: [],
+      loading: true
     });
-  }, []);
 
-  _react.default.useEffect(function () {
-    if (movieDetails) {
-      console.log('movie details', movieDetails);
-      setLoading(false);
+    return _this;
+  }
+
+  _createClass(MovieDetailsPage, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var action = this.context.action;
+      console.log('url', this.props.match.params.slug);
+      var mID = this.props.match.params.movieId;
+      var url = (0, _api.fetchUrl)(_api.apikey, "movie/".concat(mID));
+      action.setCurrentUrl(this.props.match.path);
+      fetch(url).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        _this2.setState({
+          movieDetails: data
+        }, function () {
+          _this2.setState({
+            loading: false
+          });
+        });
+      }).catch(function (err) {
+        return console.error(err);
+      });
+    } // React.useEffect(() => {
+    //   let mID = match.params.movieId
+    //   let url = fetchUrl(apikey , `movie/${mID}`)
+    //   context.action.setCurrentUrl(match.path)
+    //   fetch(url)
+    //     .then(res => res.json())
+    //     .then(data => setMovieDetails(data))
+    //     .catch(err => console.error(err))
+    // } , [])
+    // React.useEffect(() => {
+    //   if (movieDetails) {
+    //     console.log('movie details' , movieDetails)
+    //     setLoading(false)
+    //   }
+    // } , [movieDetails])  
+
+  }, {
+    key: "render",
+    value: function render() {
+      var _this$state = this.state,
+          loading = _this$state.loading,
+          movieDetails = _this$state.movieDetails;
+      return _react.default.createElement("div", {
+        className: "jsx-2231958776"
+      }, loading ? _react.default.createElement("h1", {
+        className: "jsx-2231958776"
+      }, "Loading...") : _react.default.createElement(_react.default.Fragment, null, movieDetails.backdrop_path ? _react.default.createElement(_backdrop.default, {
+        img: movieDetails.backdrop_path
+      }) : _react.default.createElement(_backdrop.default, {
+        img: movieDetails.poster_path
+      }), _react.default.createElement("div", {
+        className: "jsx-2231958776" + " " + "movie-details-content flex items-center justify-center flex-col"
+      }, _react.default.createElement("div", {
+        className: "jsx-2231958776" + " " + "container mx-auto flex mt-10"
+      }, _react.default.createElement(MovieDetailsCard, {
+        details: movieDetails
+      })), _react.default.createElement("div", {
+        className: "jsx-2231958776" + " " + "container mx-auto flex items-center justify-center mt-10"
+      }))), _react.default.createElement(_style.default, {
+        styleId: "2231958776",
+        css: "body{background:whitesmoke;}.movie-details-content{min-height:100vh;}"
+      }));
     }
-  }, [movieDetails]);
+  }]);
 
-  return _react.default.createElement("div", {
-    className: "jsx-3025102732"
-  }, loading ? _react.default.createElement("h1", {
-    className: "jsx-3025102732"
-  }, "Loading...") : _react.default.createElement(_react.default.Fragment, null, movieDetails.backdrop_path ? _react.default.createElement(_backdrop.default, {
-    img: movieDetails.backdrop_path
-  }) : _react.default.createElement(_backdrop.default, {
-    img: movieDetails.poster_path
-  }), _react.default.createElement("div", {
-    className: "jsx-3025102732" + " " + "movie-details-content flex items-center justify-center flex-col"
-  }, _react.default.createElement("div", {
-    className: "jsx-3025102732" + " " + "container mx-auto flex mt-10"
-  }, _react.default.createElement(MovieDetailsCard, {
-    details: movieDetails
-  })), _react.default.createElement("div", {
-    className: "jsx-3025102732" + " " + "container mx-auto flex items-center justify-center mt-10"
-  }))), _react.default.createElement(_style.default, {
-    styleId: "3025102732",
-    css: "body{background:whitesmoke;}.movie-details-content{min-height:100vh;}"
-  }));
-}
+  return MovieDetailsPage;
+}(_react.Component);
 
-function MovieDetailsCard(_ref2) {
-  var details = _ref2.details;
+exports.default = MovieDetailsPage;
+
+_defineProperty(MovieDetailsPage, "contextType", _provider.MovieContext);
+
+function MovieDetailsCard(_ref) {
+  var details = _ref.details;
   return _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "col w-2/3 flex bg-white shadow mx-auto mt-14 rounded-lg overflow-hidden"
+    className: "jsx-2720466793" + " " + "col w-2/3 flex bg-white shadow mx-auto mt-14 rounded-lg overflow-hidden"
   }, _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "col-left"
+    className: "jsx-2720466793" + " " + "col-left"
   }, _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "poster-container w-48 border overflow-hidden"
+    className: "jsx-2720466793" + " " + "poster-container w-48 border overflow-hidden"
   }, _react.default.createElement("img", {
     src: "".concat(_api.imgUrl, "original").concat(details.poster_path),
     alt: "",
-    className: "jsx-177921966" + " " + 'poster'
+    className: "jsx-2720466793" + " " + 'poster'
   }))), _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "col-right ml-5 px-5 py-6 flex flex-col justify-center"
+    className: "jsx-2720466793" + " " + "col-right ml-5 px-5 py-6 flex flex-col justify-center"
   }, _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "h-title text-2xl mb-4 font-sans font-bold"
+    className: "jsx-2720466793" + " " + "h-title text-2xl mb-4 font-sans font-bold"
   }, details.title), _react.default.createElement(MovieDetailsContent, {
     title: "Tag",
     content: details.tagline
@@ -39280,26 +39578,26 @@ function MovieDetailsCard(_ref2) {
     title: "Overview",
     content: details.overview
   }), _react.default.createElement("button", {
-    className: "jsx-177921966" + " " + 'rounded-full text-teal font-bold btn-addCart'
+    className: "jsx-2720466793" + " " + 'rounded-full text-teal text-left font-bold btn-addCart'
   }, "add to cart"), _react.default.createElement("div", {
-    className: "jsx-177921966" + " " + "genres flex mt-5"
+    className: "jsx-2720466793" + " " + "genres flex mt-5"
   }, details.length !== 0 ? details.genres.map(function (genre, index) {
     return _react.default.createElement("div", {
-      className: "jsx-177921966" + " " + 'mr-2 py-1 px-3 font-sans text-sm bg-red-light rounded-full text-white'
+      className: "jsx-2720466793" + " " + 'mr-2 py-1 px-3 font-sans text-sm bg-red-light rounded-full text-white'
     }, _react.default.createElement("div", {
-      className: "jsx-177921966"
+      className: "jsx-2720466793"
     }, genre.name));
   }) : _react.default.createElement("h1", {
-    className: "jsx-177921966"
+    className: "jsx-2720466793"
   }, "loading..."))), _react.default.createElement(_style.default, {
-    styleId: "177921966",
-    css: ".poster-container.jsx-177921966{width:240px;height:100%;}.btn-addCart.jsx-177921966{width:185px;}.poster.jsx-177921966{width:100%;height:100%;object-fit:cover;object-position:center;}"
+    styleId: "2720466793",
+    css: ".poster-container.jsx-2720466793{width:240px;height:100%;}.poster.jsx-2720466793{width:100%;height:100%;object-fit:cover;object-position:center;}"
   }));
 }
 
-function MovieDetailsContent(_ref3) {
-  var title = _ref3.title,
-      content = _ref3.content;
+function MovieDetailsContent(_ref2) {
+  var title = _ref2.title,
+      content = _ref2.content;
   return _react.default.createElement("div", {
     className: "mb-5"
   }, _react.default.createElement("div", {
@@ -39307,18 +39605,6 @@ function MovieDetailsContent(_ref3) {
   }, title), _react.default.createElement("h5", {
     className: "font-normal leading-normal"
   }, content == "" ? "-" : content));
-}
-
-function Genres(_ref4) {
-  var genre = _ref4.genre;
-
-  _react.default.useEffect(function () {
-    console.log('genre', genre);
-  }, {
-    genre: genre
-  });
-
-  return _react.default.createElement("h1", null, "genre");
 }
 },{"styled-jsx/style":"../node_modules/styled-jsx/style.js","react":"../node_modules/react/index.js","../../utils/api":"utils/api.js","./backdrop":"pages/details/backdrop.js","../../utils/provider":"utils/provider.js"}],"component/popup.js":[function(require,module,exports) {
 "use strict";
@@ -39508,7 +39794,7 @@ function Navbar() {
   }
 
   _react.default.useEffect(function () {
-    if (currentUrl == '/details/:movieId') {
+    if (currentUrl == '/details/:movieId-:slug') {
       setClasses('in-page-details');
     } else {
       setClasses('');
@@ -39582,7 +39868,7 @@ function Roots() {
     component: _home.default
   }), _react.default.createElement(_reactRouterDom.Route, {
     exact: true,
-    path: "/details/:movieId",
+    path: "/details/:movieId-:slug",
     component: _movieDetailsPage.default
   }))), _react.default.createElement(_style.default, {
     styleId: "4113066437",

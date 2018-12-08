@@ -25,7 +25,7 @@ function Roots() {
       <HashRouter>
         <Switch>
           <Route exact path='/' component={Home} />
-          <Route exact path='/details/:movieId' component={MovieDetailsPage} />
+          <Route exact path='/details/:movieId-:slug' component={MovieDetailsPage} />
         </Switch>
       </HashRouter>
       <style jsx global>{`

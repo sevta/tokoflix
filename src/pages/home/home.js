@@ -1,11 +1,12 @@
-import React from 'react'
+import React , { Component } from 'react'
 import { AppContext , MovieContext } from '../../utils/provider'
-import { apikey , apiUrl } from '../../utils/api'
+import { apikey , apiUrl , fetchUrl } from '../../utils/api'
 import queryString from 'query-string' 
 import Movie from './movie'
 import { Link } from 'react-router-dom'
 import Pagination from 'react-js-pagination'
 import Banner from './banner'
+import './pagination.css'
 
 const menu = [
   'Now Playing' , 
@@ -13,24 +14,35 @@ const menu = [
   'Search'
 ]
 
-function Home(props) {
-  // movie context
-  const {
-    movieState , 
-    movies , 
-    moviesTrending , 
-    currentPage , 
-    action , 
-    cart ,
-    setCurrentUrl
-  } = React.useContext(MovieContext)
+class Home extends Component {
+  constructor(props) {
+    super(props)
+  }
 
-  const [menuSelect , setMenuSelect] = React.useState('')
+  static contextType = MovieContext
 
-  function onCartClick(item) {
-    console.log('oncart click' , item)
+  state = {
+    menuSelect: '' ,
+    loading: false 
+  }
+
+  componentDidMount() {
+    const { action } = this.context
+    let currentUrl = queryString.parse(this.props.location.search)
+    console.log('home url' , currentUrl.page)
+    if (currentUrl.page !== null) {
+      action.setCurrentUrl(`/${currentUrl.page}`)
+      this.updateMovies(currentUrl.page)
+    } else {
+      action.setCurrentUrl(`/`)
+      this.updateMovies(1)
+    }
+  }
+
+  onCartClick = item => {
+    const { cart , action } = this.context 
     if (cart.includes(item)) {
-      console.log('delete')
+      // console.log('delete')
       const indexToDelete = cart.indexOf(item)
       cart.splice(indexToDelete , 1)
       action.addToCart([...cart])
@@ -38,98 +50,126 @@ function Home(props) {
     } else {
       action.addToCart([...cart , item])
       localStorage.setItem('cart' , JSON.stringify(cart))        
-      console.log('add')
+      // console.log('add')
     }
   }
 
-  React.useEffect(() => {
-    console.log('cart now' , cart)
-  } , [cart])
-
   // render per movie
-  const renderMovie = (movies) => {
+  renderMovie = movies => {
     return movies.length !== 0 ? movies.results.map((movie , i) => (
-      <Movie key={i} details={movie} onClick={onCartClick} />
+      <Movie key={i} details={movie} onClick={this.onCartClick} />
     )) : (
       <h1>Loading...</h1>
     )
   }
 
-  React.useEffect(() => {
-    action.setCurrentUrl('/')
-  } , [])
-
-  // handlechange per page
-  function handlePageChange(pageNumber) {
-    action.setCurrentPage(pageNumber)
+  // updated movies
+  updateMovies = (currentPage) => {
+    const { action } = this.context
+    fetch(fetchUrl(apikey ,'movie/popular', `&region=ID&page=${currentPage}`))
+    .then(res => res.json())
+    .then(data => {
+      action.setMoviesTrending(data , moviesTrending => {
+        console.log('success updated data' , moviesTrending)
+        if (currentPage == 1) {
+          this.props.history.push(`/`)   
+          this.setState({ loading: false })
+        } else {
+          this.props.history.push(`/?page=${currentPage}`)
+          this.setState({ loading: false })
+        }
+      })
+    })
+    .catch(err => console.error(err))
   }
 
-  function onMenuSelected(menu) {
+  // handlechange per page
+  handlePageChange = pageNumber => {
+    const { action } = this.context
+    action.setCurrentPage(pageNumber , currentPage => {
+      this.setState({ loading: true })
+      this.updateMovies(currentPage)
+    })
+  }
+
+  onMenuSelected = menu => {
     console.log('menu selecte' , menu)
   }
 
-  // set current page if state current page changed
-  React.useEffect(() => {
-    console.log('page change' , currentPage)
-    if (currentPage == 1) {
-      props.history.push(`/`)      
-    } else {
-      props.history.push(`/?page=${currentPage}`)
-    }
-  } , [currentPage])
-
-
-  return (
-    <div className='w-full'>
-      <Banner />
-      <Menu onMenuSelected={onMenuSelected} />
-      <div>
-        <div className="container mx-auto">
-          <h1 className='ml-5 mb-3 font-sans font-normal text-green'>Now playing</h1>
-        </div>
-        <div className="movie-container container mx-auto flex flex-wrap items-center">
-          {renderMovie(movies)}
-        </div>
+  render() {
+    const {
+      movieState , 
+      movies , 
+      moviesTrending , 
+      currentPage , 
+      action , 
+      cart ,
+      setCurrentUrl
+    } = this.context
+    return (
+      <div className='w-full'>
+        <Banner />
+        <Menu onMenuSelected={this.onMenuSelected} />
+        { this.state.loading ? (
+          <h1>loading...</h1>
+        ) : (
+          <React.Fragment>
+            <div>
+              <div className="container mx-auto">
+                <h1 className='ml-5 mb-3 font-sans font-normal text-green'>Now playing</h1>
+              </div>
+              <div className="movie-container container mx-auto flex flex-wrap items-center">
+                {this.renderMovie(movies)}
+              </div>
+            </div>
+            <div className='mt-10'>
+              <div className="container mx-auto">
+                <h1 className='ml-5 mb-3 font-sans font-normal text-green'>Trending</h1>
+              </div>
+              <div className="movie-container container mx-auto flex flex-wrap items-center">
+                {this.renderMovie(moviesTrending)}
+              </div>
+            </div>
+          </React.Fragment>
+        ) }
+        <Pagination 
+          activePage={currentPage}
+          itemsCountPerPage={2} 
+          totalItemsCount={20}
+          pageRangDisplayed={5}
+          onChange={this.handlePageChange}
+        />
       </div>
-      <div className='mt-10'>
-        <div className="container mx-auto">
-          <h1 className='ml-5 mb-3 font-sans font-normal text-green'>Trending</h1>
-        </div>
-        <div className="movie-container container mx-auto flex flex-wrap items-center">
-          {renderMovie(moviesTrending)}
-        </div>
-      </div>
-      <Pagination 
-        activePage={currentPage}
-        itemsCountPerPage={2} 
-        totalItemsCount={20}
-        pageRangDisplayed={5}
-        onChange={handlePageChange}
-      />
-    </div>
-  )
+    )
+  }
+
 }
 
-function Menu({onMenuSelected}) {
-  const [menuSelected , setMenuSelected] = React.useState('')
-  function onMenuSelect(menu) {
-    // setMenuSelected(menu)
-    setMenuSelected(menu)
+class Menu extends Component {
+  constructor(props) {
+    super(props) 
+  }
+
+  state = {
+    menuSelected: ''
+  }
+
+  onMenuSelect = menu => {
+    this.setState({ menuSelected: menu } , () => {
+      this.props.onMenuSelected(menu)
+    })
     console.log(menu)
   }
 
-  React.useEffect(() => {
-    onMenuSelected(menuSelected)
-  } , [menuSelected])
-
-
-  return (
-    <div className='container mx-auto flex justify-center'>
-      {menu.map((menu , i) => (
-        <div className="menu-list mr-5 text-md text-grey cursor-pointer" onClick={() => onMenuSelect(menu)}>{menu}</div>
-      ))}
-    </div>  
-  )
+  render() {
+    return (
+      <div className='container mx-auto flex justify-center'>
+        {menu.map((menu , i) => (
+          <div className="menu-list mr-5 text-md text-grey cursor-pointer" onClick={() => this.onMenuSelect(menu)}>{menu}</div>
+        ))}
+      </div>  
+    )
+  }
 }
 
 export default Home

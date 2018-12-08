@@ -12,7 +12,7 @@ export default function Navbar() {
   }
 
   React.useEffect(() => {
-    if (currentUrl == '/details/:movieId') {
+    if (currentUrl == '/details/:movieId-:slug') {
       setClasses('in-page-details')
     } else {
       setClasses('')
