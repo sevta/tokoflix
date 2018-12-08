@@ -1,10 +1,12 @@
 import React from 'react'
-import { UserContext } from '../app'
+import { UserContext } from '../utils/provider'
 
-export default function Popup({show}) {
-  const {userState , setUser , setIsNewUser} = React.useContext(UserContext)
+export default function Popup() {
+  const {userState , action , isNewUser} = React.useContext(UserContext)
   const [value , setValue] = React.useState('')
   const [submited , setSubmited] = React.useState(false)
+  const [show , setShow] = React.useState(false)
+
   /**
    * TODO:
    * basic validate input username
@@ -16,15 +18,22 @@ export default function Popup({show}) {
   }
 
   React.useEffect(() => {
+    if (isNewUser) {
+      setShow(true)
+    } 
+  })
+
+  React.useEffect(() => {
     if (submited) {
-      setIsNewUser(false)
+      action.setIsNewUser(false)
       localStorage.setItem('user' , JSON.stringify(userState))
+      setShow(false)
     }
   } , [userState])
 
   function onSubmit(e) {
     e.preventDefault()
-    setUser({...userState , username: value})
+    action.setUser({...userState , username: value})
     setSubmited(true)
   }
 
